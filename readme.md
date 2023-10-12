@@ -16,8 +16,16 @@ add_executable(실행파일이름 상대경로)
 add_executable(test1App src/test1.cpp)
 ```
 
-## 각 챕터별 docs.md 를 통해서 해당 내용 대충 정리해둠
-
 ### ch1 cpp에 익숙해지기
 
+1. 템플릿 <T> 사용
+2. operator overriding
+3. 이차원 배열을 일차원 배열로 관리하기
+
+클래스는 왜 사용해야하는가?
+
+### ch2 Set과 Bag
+
+1. Bag & Set
+2. 다항식 계산 및 출력
 
