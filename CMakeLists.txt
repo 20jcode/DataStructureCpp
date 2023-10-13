@@ -6,3 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(DataStructureCpp main.cpp)
 
 add_executable(ch1 ch1-CppStudy/useCpp.cpp)
+
+add_executable(templateTest ch1-CppStudy/useOperatorTemplate.cpp)
+
+add_executable(queen8 ch3-Stack/queen8.cpp)
