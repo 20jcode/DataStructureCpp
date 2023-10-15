@@ -27,12 +27,6 @@ public:
 	int getY() {
 		return iy;
 	}
-	void setX(int x) {
-		ix = x;
-	}
-	void setY(int y) {
-		iy = y;
-	}
 	friend ostream& operator<<(ostream& os, Point px);
 };
 
@@ -48,19 +42,18 @@ public:
 	T& Top() const;
 	void Push(const T& item);
 	T& Pop();
-	friend ostream& operator<<<T>(ostream& os, Stack<T>&);
-	friend istream& operator>><T>(istream& os, Stack<T>&);
+	friend ostream& operator<<(ostream& os, Stack<T>& s){
+        os<<s.top<<endl;
+    }
+	friend istream& operator>>(istream& os, Stack<T>& s){
+        return os; //입력은 받지 않아도 되는 듯 싶다.
+    }
 private:
 	T* stack;
 	int top;
 	int capacity;
 };
 
-
-template <class T>
-istream& operator>>(istream& os, Stack<T>& s) {
-	return os;
-}
 template <class T>
 Stack<T>::Stack(int stackCapacity) :capacity(stackCapacity)
 {
@@ -104,6 +97,7 @@ void Stack<T>::Push(const T& x)
 	stack[++top] = x;
 }
 
+//return stack[top--]
 template <class T>
 T& Stack<T>::Pop()
 {
@@ -114,7 +108,7 @@ T& Stack<T>::Pop()
 
 //가로열에 퀸을 둘 수 있다면 true, 아니면 false
 bool checkRow(int d[][COL], int crow) {
-    for(int i = 0; i<ROW;i++){
+    for(int i = 0; i<COL;i++){
         if(d[crow][i] == 1){
             return false;
         }
@@ -133,15 +127,15 @@ bool checkCol(int d[][COL], int ccol) { //세로에 들어갈 수 있는지 확�
     return true;
 }
 
-//대각선 왼쪽 위아래로 퀸을 둘 수 있다면 true, 아니면 false
+//대각선 오른쪽 위 왼쪽 아래 퀸을 둘 수 있다면 true, 아니면 false
 bool checkDiagSW(int d[][COL], int cx, int cy) { // x++, y-- or x--, y++ where 0<= x,y <= 7
 
-    for(int i = 0; (i<ROW-cx)||(i>cy);i++){
+    for(int i = 0; (i<ROW-cx)&&(i>cy);i++){
         if(d[cx+i][cy-i] == 1){
             return false;
         }
     }
-    for(int i = 0; (i<cx)||(i>COL-cy);i++){
+    for(int i = 0; (i<cx)&&(i>COL-cy);i++){
         if(d[cx-i][cy+i] == 1){
             return false;
         }
@@ -149,15 +143,16 @@ bool checkDiagSW(int d[][COL], int cx, int cy) { // x++, y-- or x--, y++ where 0
     return true;
 }
 
+//대각선 왼쪽 위 오른쪽 아래로 퀸을 둘 수 있다면 true, 아니면 false
 bool checkDiagSE(int d[][COL], int cx, int cy) {// x++, y++ or x--, y--
 
-    for(int i = 0; (i<ROW-cx)||(i<COL-cy);i++){
+    for(int i = 0; (i<ROW-cx)&&(i<COL-cy);i++){
         if(d[cx+i][cy+i] == 1){
             return false;
         }
     }
 
-    for(int i = 0; (i<cx)||(i<cy); i++){
+    for(int i = 0; (i<=cx)&&(i<=cy); i++){
         if(d[cx-i][cy-i] == 1){
             return false;
         }
@@ -175,11 +170,13 @@ bool checkMove(int d[][COL], int x, int y) {// (x,y)로 이동 가능한지를 c
 }
 int nextMove(int d[][COL], int row, int col) {// 현재 row, col에 대하여 이동할 col을 return
 
-    for(int i=0;i<ROW;i++){
-        for(int j=col+1;j<COL;j++){
-            if(checkMove(d,i,j)){
-                return j;
-            }
+    if(row+1==ROW){
+        return -1;
+    }
+
+    for(int j=0;j<COL;j++){
+        if(checkMove(d,row+1,j)){ //다음 row에 대해서 0부터 들어갈 수 있는 지 확인함.
+            return j;
         }
     }
 
@@ -191,39 +188,69 @@ int nextMove(int d[][COL], int row, int col) {// 현재 row, col에 대하여 �
 
 void showQueens(int data[][COL]) {
 
+    for(int i=0; i<ROW;i++){
+        cout<<i<<"번째 : ";
+        for(int j=0; j<COL;j++){
+            cout<<j<<": ["<<data[i][j]<<"]";
+        }
+        cout<<endl;
+    }
+    cout<<endl<<endl;
+
 }
 void solveQueen(int d[][COL]) {
 	int ans = 0;
     Stack<Point> s;
     int sSum = 0;
     Point target;
+    Point lastPop;
 
     for(int i = 0; i<ROW; i++){
         for(int j = 0; j<COL; j++){
+
+            cout<<i<<" "<<j<<endl;
 
             s.Push(Point(i,j));
             d[i][j]=1;
             sSum=1;
 
+            target = s.Top();
+
             while(!s.IsEmpty()){
 
-                target = s.Top();
+                int nextCol = nextMove(d,target.getX(),target.getY());
 
-                nextMove(d,target.getX(),target.getY());
+                if(nextCol == -1){
+                    if(sSum == ROW){
+                        ans+=1;
+                    }
+                    lastPop = s.Pop();
+                    target = s.Top();
+                    sSum-=1;
+                } else{
+                    if(lastPop.getY()==nextCol){//Pop이 되면 target은 계속 top을 가리키며, 다만 Pop된 자리는 다시 둘 수 없다.
+                        for(int py=nextCol;py<COL;py++){ //같은 줄에서 퀸을 놓을 수 있는 다음 자리가 있는지 확인
+                            if(checkMove(d,target.getX(),py)){
+                                s.Push(Point(target.getX(),py));
+                                target = s.Top();
+                            } else{ //더이상 퀸을 놓을 수 있는 자리가 그 줄에 없다면
+                                lastPop = s.Pop();
+                                target = s.Top();
+                                sSum-=1;
+                            }
+                        }
+                    } else{
+                        s.Push(Point(target.getX()+1,nextCol));
+                        sSum+=1;
+                        target = s.Top();
+                    }
 
-                if(checkMove(d,i,j)){
-                    s.Push(Point(i,j));
-                    d[i][j] = 1;
-                    sSum+=1;
                 }
-                if(sSum == 8){
-                    target = s.Pop();
-                    ans+=1;
-                    d[target.getX()][target.getY()]=0;
-                }
 
-                sSum +=1;
+
             }
+
+
         }
     }
 
@@ -241,6 +268,6 @@ int main(void) {
 			data[i][j] = 0;
 
 	solveQueen(data);
-	system("pause");
+
 	return 0;
 }

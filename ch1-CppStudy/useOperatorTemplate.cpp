@@ -23,11 +23,6 @@ public:
     friend ostream& operator<<(ostream& os, InsideObj obj);
 };
 
-ostream& InsideObj::operator<<(ostream& os, InsideObj obj){
-    os<< obj.num1 << endl;
-
-    return os;
-}
 // 해당 오버라이딩에 대한 설명
 /*
  * friend 선언으로 외부에서 InsideObj의 내부에 접근할 수 있음
@@ -63,17 +58,31 @@ private:
 
 public:
     Stack(int stackCapacity = 10);
-    friend ostream& operator<<<T>(ostream& os, Stack<T>&);
-	friend istream& operator>><T>(istream& os, Stack<T>&);
+
+
+    friend ostream& operator<<(ostream& os, Stack<T>& s){
+        os<<s.capacity<<"스택잘 작동 2"<<endl;
+        return os;
+    }
+	friend istream& operator>>(istream& os, Stack<T>& s);
 };
 
-template <class T>
-ostream& Stack<T>::operator<<(ostream& os, Stack<T>& s) {
+ostream& operator<<(ostream& os, InsideObj obj){
 
-    os<<s.capacity<<endl;
+    os<< obj.num1 << endl;
 
     return os;
 }
+
+/*
+ostream& operator<<(ostream& os, Stack<InsideObj>& s) {
+
+    os<<s.capacity<<"스택 잘 작동해요"<<endl;
+
+    return os;
+}
+*/
+
 template <class T>
 istream& operator>>(istream& os, Stack<T>& s) {
 	return os;
@@ -86,8 +95,14 @@ Stack<T>::Stack(int stackCapacity) :capacity(stackCapacity){
 
 int main(void){
 
-    Stack<InsideObj> s;
+    Stack s = Stack<InsideObj>(10);
 
+    cout<<s;
+
+    InsideObj o;
+
+    o = InsideObj();
+    cout<<o<<"inside"<<endl;
 
     return 0;
 }
