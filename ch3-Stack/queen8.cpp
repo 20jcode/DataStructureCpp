@@ -208,15 +208,17 @@ void solveQueen(int d[][COL]) {
     for(int i = 0; i<ROW; i++){
         for(int j = 0; j<COL; j++){
 
+
+
             cout<<i<<" "<<j<<endl;
 
             s.Push(Point(i,j));
             d[i][j]=1;
             sSum=1;
 
-            target = s.Top();
-
             while(!s.IsEmpty()){
+
+                target = s.Top();
 
                 int nextCol = nextMove(d,target.getX(),target.getY());
 
@@ -225,24 +227,24 @@ void solveQueen(int d[][COL]) {
                         ans+=1;
                     }
                     lastPop = s.Pop();
-                    target = s.Top();
+
                     sSum-=1;
                 } else{
                     if(lastPop.getY()==nextCol){//Pop이 되면 target은 계속 top을 가리키며, 다만 Pop된 자리는 다시 둘 수 없다.
                         for(int py=nextCol;py<COL;py++){ //같은 줄에서 퀸을 놓을 수 있는 다음 자리가 있는지 확인
                             if(checkMove(d,target.getX(),py)){
                                 s.Push(Point(target.getX(),py));
-                                target = s.Top();
+
                             } else{ //더이상 퀸을 놓을 수 있는 자리가 그 줄에 없다면
                                 lastPop = s.Pop();
-                                target = s.Top();
+
                                 sSum-=1;
                             }
                         }
                     } else{
                         s.Push(Point(target.getX()+1,nextCol));
                         sSum+=1;
-                        target = s.Top();
+
                     }
 
                 }
@@ -267,7 +269,8 @@ int main(void) {
 		for (int j = 0; j < col; j++)
 			data[i][j] = 0;
 
-	solveQueen(data);
+    solveQueen(data);
+
 
 	return 0;
 }
