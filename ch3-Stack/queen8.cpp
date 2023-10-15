@@ -168,23 +168,26 @@ bool checkMove(int d[][COL], int x, int y) {// (x,y)로 이동 가능한지를 c
 
     return false;
 }
+//현재 row와 col에 Queen이 있는 경우, 현재의 Queen을 제거하고 현재의 row에 다른 Queen을 둘 수 있는 자리를 반환
 int nextMove(int d[][COL], int row, int col) {// 현재 row, col에 대하여 이동할 col을 return
-
-    if(row+1==ROW){
-        return -1;
-    }
-
-    for(int j=0;j<COL;j++){
-        if(checkMove(d,row+1,j)){ //다음 row에 대해서 0부터 들어갈 수 있는 지 확인함.
-            return j;
-        }
-    }
-
-    return -1; //이동할 수 있는 곳이 없다면 -1 리턴
-
 
 
 }
+
+bool findNext(int d[][COL],Point& lastPop,Point& target){
+    if(lastPop.getX()!=-1){
+        for(int j=0;j<COL;j++){
+            if(j!=lastPop.getY()){
+                if(checkMove(d,target.getX()+1,j)){
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
 
 void showQueens(int data[][COL]) {
 
@@ -201,57 +204,34 @@ void showQueens(int data[][COL]) {
 void solveQueen(int d[][COL]) {
 	int ans = 0;
     Stack<Point> s;
-    int sSum = 0;
     Point target;
-    Point lastPop;
+    int sSum = 0;
+    Point lastPop = Point(-1,-1);
 
     for(int i = 0; i<ROW; i++){
         for(int j = 0; j<COL; j++){
 
-
-
-            cout<<i<<" "<<j<<endl;
-
             s.Push(Point(i,j));
             d[i][j]=1;
-            sSum=1;
 
-            while(!s.IsEmpty()){
+            while(s.IsEmpty()){
 
                 target = s.Top();
 
-                int nextCol = nextMove(d,target.getX(),target.getY());
-
-                if(nextCol == -1){
-                    if(sSum == ROW){
-                        ans+=1;
-                    }
-                    lastPop = s.Pop();
-
-                    sSum-=1;
-                } else{
-                    if(lastPop.getY()==nextCol){//Pop이 되면 target은 계속 top을 가리키며, 다만 Pop된 자리는 다시 둘 수 없다.
-                        for(int py=nextCol;py<COL;py++){ //같은 줄에서 퀸을 놓을 수 있는 다음 자리가 있는지 확인
-                            if(checkMove(d,target.getX(),py)){
-                                s.Push(Point(target.getX(),py));
-
-                            } else{ //더이상 퀸을 놓을 수 있는 자리가 그 줄에 없다면
-                                lastPop = s.Pop();
-
-                                sSum-=1;
-                            }
-                        }
-                    } else{
-                        s.Push(Point(target.getX()+1,nextCol));
-                        sSum+=1;
-
-                    }
-
+                if(findNext(d,lastPop,target)){ //다음 ROW에 퀸을 둘 수 있는 자리가 있는 경우, lastPop자리를 제외해야한다.
+                    s.Push(Point());
+                    sSum++;
+                } else{ //다음 ROW 퀸을 둘 수 없는 경우
+                    lastPop = s.Pop(); //스택에서 하나 제거하고, 마지막에 제거한 장소를 기억
+                    sSum--; //총합을 감소
                 }
 
-
+                if(sSum==8){ //다찾은경우
+                    ans++;
+                    lastPop = s.Pop();
+                    sSum--;
+                }
             }
-
 
         }
     }
@@ -259,6 +239,7 @@ void solveQueen(int d[][COL]) {
     cout<<ans<<endl;
 
 }
+
 
 
 
