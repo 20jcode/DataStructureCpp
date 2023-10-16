@@ -2,6 +2,8 @@
 // Created by leeyoungjun on 2023/10/16.
 //
 
+//완성
+
 #include <iostream>
 #include <time.h>
 using namespace std;
@@ -82,33 +84,27 @@ bool LinkedList::Delete(int element) // delete the element
 {
 	Node* q, * current = first;
 
-    q = current; // first 값이 element와 일치하는 경우 q가 NULL이 되는 현상을 막기 위해
+    if (first->data == element){ //처음이 element인 경우, 삭제
+        first = first->link;
+        return true;
+    }
 
-    while(current->data != element){ //element와 일치하는 값을 찾으면 멈춘다
-
+    while(current->data != element){ // current가 element가 나올때까지 반복
         q = current;
         current = current->link;
-
         if(current == nullptr){
             return false;
         }
     }
 
-    //current를 삭제하고 다음 노드와 q를 연결시킨다.
-
-
-    if(current->link != nullptr){ //element가 리스트의 제일 마지막 부분이 아니고,
-        if(current != first){ //element가 첫번째 값이 아닌경우
-            q->link = current->link;
-        } else{ //element가 첫번째 부분인 경우
-            first = q->link;
-        }
-
-    } else{ //current가 마지막에 위치한 경우
+    if(current->link == nullptr){ //삭제하려는 원소가 마지막인경우
         q->link = nullptr;
-    } //처음이자 마지막인 것이라면?
+    } else { //마지막이 아닌 경우
+        q->link = current->link;
+    }
 
-	return true;
+    return true;
+
 }
 LinkedList& LinkedList::operator+(LinkedList& lb) {
 	LinkedList lc;
@@ -116,11 +112,11 @@ LinkedList& LinkedList::operator+(LinkedList& lb) {
 
     lc.first = a;
 
-    while(a->link== nullptr){
+    while(a->link != nullptr){
         a=a->link;
     }
+    a->link = b; //a의 마지막에 b의 노드를 이어주고
 
-    a->link = b;
 
 	return lc;
 }
@@ -154,17 +150,19 @@ int main() {
 			break;
 		case Show:
 			la.Show();
+            lb.Show();
 			break;
 		case Search:
 			int n; cin >> n;
 			result = la.Search(n);
 			if (!result)
-				cout << "∞Àªˆ ∞™ = " << n << " µ•¿Ã≈Õ∞° æ¯Ω¿¥œ¥Ÿ.";
+				cout << "찾기 실패 = " << n << " 입니다.";
 			else
-				cout << "∞Àªˆ ∞™ = " << n << " µ•¿Ã≈Õ∞° ¡∏¿Á«’¥œ¥Ÿ.";
+				cout << "찾기 성공 = " << n << " 입니다.";
 			break;
 		case Merge:
 			lc = la + lb;
+            lc.Show();
 			break;
 		case Exit:
 			break;
