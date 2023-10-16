@@ -25,6 +25,33 @@ public:
 	}
 };
 
+ostream& operator<<(ostream& os, Employee& em){
+    os<<"no : "<<em.eno<<" name : "<<em.ename<<" salary : "<<em.salary<<endl;
+
+    return os;
+}
+
+bool Employee::operator<(Employee& em){
+    if(this->salary<em.salary){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool Employee::operator==(Employee & em) {
+    if(this->eno != em.eno){
+        return false;
+    }
+    if(this->ename != em.ename){
+        return false;
+    }
+    if(this->salary != em.salary){
+        return false;
+    }
+    return true;
+}
+
 class Node {
 	friend class ListIterator;
 	friend class CircularList;
@@ -44,7 +71,8 @@ class CircularList {
 	static Node* av;
 public:
 	CircularList() {
-		last = new Node(); last->link = last;
+		last = new Node();
+        last->link = last;
 	}
 	bool Delete(string);
 	void Show();
@@ -202,6 +230,8 @@ enum Enum {
 };
 
 Node* CircularList::av = NULL;
+
+
 
 int main() {
 	Enum menu; // �޴�

@@ -13,3 +13,4 @@ add_executable(queen8 ch3-Stack/queen8.cpp)
 
 add_executable(useOperator3types ch1-CppStudy/useOperator1.cpp)
 add_executable(work5List ch4-list/availableList.cpp)
+add_executable(intList ch4-list/intList.cpp)

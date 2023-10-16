@@ -81,8 +81,7 @@ inline bool Stack<T>::IsEmpty() const { return top == -1; }
 
 template <class T>
 inline T& Stack<T>::Top() const
-{
-	if (IsEmpty()) throw "Stack is empty";
+{if (IsEmpty()) throw "Stack is empty";
 	return stack[top];
 }
 
