@@ -27,7 +27,7 @@ public:
 	}
 	bool Delete(int);
 	void Show();
-	void Add(int element);//
+	void Add(int element);
 	bool Search(int data);
 	LinkedList& operator+(LinkedList&);
 };
@@ -51,18 +51,27 @@ void LinkedList::Show() { //리스트 내부의 전체 목록을 보여준다.
 	    cout << endl;
     }
 }
-void LinkedList::Add(int element) //
+void LinkedList::Add(int element) //TODO : 정렬되도록 구현
 {
 	Node* newNode = new Node(element);
 
     if(first == nullptr){ //첫번째 노드가 없는경우
         first = newNode; //추가된 노드를 첫번째 노드로 한다.
     } else{
+        /*
+         * 정렬 X 버전
+         *
         Node* iter = first; //포인터가 첫번째의 링크로 오도록 하고
         while(iter->link != nullptr){ //포인터의 다음 link가 nullptr이 나올때까지
             iter = iter->link; //계속 넘겨가다가
         }
         iter->link = newNode; //새로운 노드를 link에 붙여준다.
+        */
+
+        Node* p = first;
+        Node* q = first->link;
+
+
     }
 
 }
