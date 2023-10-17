@@ -31,6 +31,8 @@ public:
 	bool Search(int data);
 	LinkedList& operator+(LinkedList&);
 };
+
+// $전체 리스트를 순서대로 출력
 void LinkedList::Show() { //리스트 내부의 전체 목록을 보여준다.
 	Node* p = first;
 

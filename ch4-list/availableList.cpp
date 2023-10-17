@@ -224,7 +224,7 @@ bool ListIterator::NextNotNull() {
 Employee* ListIterator::First() {
 	return &list.last->link->link->data;
 }
-Employee* ListIterator::Next() {
+Employee* ListIterator::Next() { //TODO : 완성시켜야함...?
 	Employee* e = &current->data;
 	current = current->link;
 	return e;
