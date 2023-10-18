@@ -51,23 +51,13 @@ void LinkedList::Show() { //리스트 내부의 전체 목록을 보여준다.
 	    cout << endl;
     }
 }
-void LinkedList::Add(int element) //TODO : 정렬되도록 구현
+void LinkedList::Add(int element)
 {
 	Node* newNode = new Node(element);
 
     if(first == nullptr){ //첫번째 노드가 없는경우
         first = newNode; //추가된 노드를 첫번째 노드로 한다.
     } else{
-        /*
-         * 정렬 X 버전
-         *
-        Node* iter = first; //포인터가 첫번째의 링크로 오도록 하고
-        while(iter->link != nullptr){ //포인터의 다음 link가 nullptr이 나올때까지
-            iter = iter->link; //계속 넘겨가다가
-        }
-        iter->link = newNode; //새로운 노드를 link에 붙여준다.
-        */
-
 
         Node* p = first; //현재값
         Node* q = first->link; //다음값
@@ -80,12 +70,18 @@ void LinkedList::Add(int element) //TODO : 정렬되도록 구현
             }
         }
         while(q != nullptr){ //다음값이 없을때까지
-            if(p->data<element && q->data>=element){ // element가 현재값보다 작고, 다음값보다 클때
+            if(p->data >= element){ // 현재값 >= element
+                //즉, 첫번째 값보다 element가 작은 경우
+
+                newNode->link = p;
+                first = newNode;
+            }
+            if(p->data<element && q->data>=element){ // 현재값 < element <= 다음값
                 p->link = newNode;
                 newNode->link = q;
                 break;
             } else { //그렇지 않는 경우
-                p->link = q;
+                p = q;
                 q = q->link;
             }
 
@@ -98,7 +94,7 @@ void LinkedList::Add(int element) //TODO : 정렬되도록 구현
 
 }
 //발견하면 true 반환
-bool LinkedList::Search(int data) { //
+bool LinkedList::Search(int data) {
 	Node* ptr = first;
 
     if(ptr == nullptr){
