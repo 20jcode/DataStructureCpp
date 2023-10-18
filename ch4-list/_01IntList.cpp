@@ -68,10 +68,32 @@ void LinkedList::Add(int element) //TODO : 정렬되도록 구현
         iter->link = newNode; //새로운 노드를 link에 붙여준다.
         */
 
-        Node* p = first;
-        Node* q = first->link;
 
+        Node* p = first; //현재값
+        Node* q = first->link; //다음값
+        if(q == nullptr){ //초기에 1개의 노드만 리스트에 있는 경우
+            if(p->data > element){ //입력받은 값이 data보다 작은 경우
+                newNode->link = p;
+                first = newNode;
+            } else { //입력받은 값이 data보다 크거나 같은 경우
+                p->link = newNode;
+            }
+        }
+        while(q != nullptr){ //다음값이 없을때까지
+            if(p->data<element && q->data>=element){ // element가 현재값보다 작고, 다음값보다 클때
+                p->link = newNode;
+                newNode->link = q;
+                break;
+            } else { //그렇지 않는 경우
+                p->link = q;
+                q = q->link;
+            }
 
+        }
+        //element가 마지막 값보다 큰 경우
+        if(p->data < element){
+            p->link = newNode;
+        }
     }
 
 }
