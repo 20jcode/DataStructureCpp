@@ -20,13 +20,26 @@ public:
 	bool operator==(Employee&);
 };
 ostream& operator<<(ostream& os, Employee& emp) {
-
+    os<<"eno : "<<emp.eno<<"ename : "<<emp.ename<<endl;
+    return os;
 }
 bool Employee::operator==(Employee& emp) {
 
+    if(eno != emp.eno){
+        return false;
+    }
+    if(ename != emp.ename){
+        return false;
+    }
+    return true;
 }
 bool Employee::operator<(Employee& emp) {
 
+    if(stoi(eno) < stoi(emp.eno)){
+        return true;
+    } else {
+        return false;
+    }
 }
 class Node {
 	friend class LinkedList;
@@ -54,10 +67,38 @@ public:
 void LinkedList::Show() { // 전체 리스트를 순서대로 출력한다.
 	Node* p = first;
 
+    while(p->link == nullptr){
+        cout<<p->data<<", ";
+        p = p->link;
+    }
+    cout<<p->data<<endl;
+
 }
 void LinkedList::Add(Employee element) // 임의 값을 삽입할 때 리스트가 오름차순으로 정렬이 되도록 한다
 {
 	Node* newNode = new Node(element);
+
+    if(first == nullptr){ //리스트가 비었다면
+        first = newNode;
+    } else {
+        Node* before = nullptr;
+        Node* now = first;
+
+        while(now != nullptr){
+            if(element<now->data){
+                first = newNode;
+                newNode->link = now;
+                if(before != nullptr){
+                    before->link = newNode;
+                }
+            } else if(now->data == element) {
+
+            } else { // now < element 인 경우
+
+            }
+
+        }
+    }
 
 }
 bool LinkedList::Search(string eno) { // sno를 갖는 레코드를 찾기
