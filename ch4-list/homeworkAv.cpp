@@ -1,11 +1,11 @@
 //
-// Created by 이영준 on 2023-10-15.
-// 가용공간리스트
-// 원형 객체 연결 리스트의 available list, getNode, retNode, head node를 갖고 있고
-// 삭제된 노드들은 available list에 리턴한다.
-//CircularList 를 대상으로 한 iterator를 구현한다.
-
-
+// Created by leeyoungjun on 2023/10/20.
+//
+/*
+6단계- 원형 객체 연결 리스트의 available list, getNode, retNode
+head node를 갖고 있고 삭제된 노드들은 available list에 리턴한다.
+CircularList를 대상으로 한 iterator를 구현한다.
+*/
 #include <iostream>
 #include <time.h>
 using namespace std;
@@ -24,39 +24,46 @@ public:
 	friend ostream& operator<<(ostream& os, Employee&);
 	bool operator<(Employee&);
 	bool operator==(Employee&);
+	char compare(const Employee* emp) const;
 	int getSalary() const {
 		return salary;
 	}
 };
+ostream& operator<<(ostream& os, Employee& emp) {
 
-ostream& operator<<(ostream& os, Employee& em){
-    os<<"[ no : "<<em.eno<<" name : "<<em.ename<<" salary : "<<em.salary<<" ]";
+    os<<"[ no : "<<emp.eno<<" name : "<<emp.ename<<" salary : "<<emp.salary<<" ]";
 
     return os;
 }
+bool Employee::operator==(Employee& emp) {
 
-bool Employee::operator<(Employee& em){
-    if(salary<em.salary){
+     if(eno != emp.eno){
+        return false;
+    }
+    if(ename != emp.ename){
+        return false;
+    }
+    if(salary != emp.salary){
+        return false;
+    }
+    return true;
+}
+bool Employee::operator<(Employee& emp) {
+     if(salary<emp.salary){
         return true;
     } else {
         return false;
     }
 }
-
-bool Employee::operator==(Employee & em) {
-
-    if(eno != em.eno){
-        return false;
+char Employee::compare(const Employee* emp) const {
+    if(this<emp){
+        return 'S'; //small
+    } else if(this == emp){
+        return 'E'; //equal
+    } else {
+        return 'B'; //big
     }
-    if(ename != em.ename){
-        return false;
-    }
-    if(salary != em.salary){
-        return false;
-    }
-    return true;
 }
-
 class Node {
 	friend class ListIterator;
 	friend class CircularList;
@@ -72,19 +79,20 @@ public:
 
 class CircularList {
 	friend class ListIterator;
-	Node* last;
-	static Node* av; //last 노드를 가리키는 last 변수를 사용하는 버전
+	Node* last;//last 노드를 가리키는 last 변수를 사용하는 버젼으로 구현 실습
+	static Node* av;
 public:
 	CircularList() {
-		last = new Node();
-        last->link = last;
+		last = new Node(); last->link = last;
 	}
 	bool Delete(string);
 	void Show();
-	void Add(Employee*); //sno로 정렬되도록 구현
+	void Add(Employee*);//sno로 정렬되도록 구현
 	bool Search(string);
 	Node* GetNode();
 	void RetNode(Node*);
+	void Erase();
+	CircularList& operator+(CircularList&);
 	friend ostream& operator<<(ostream& os, CircularList& l);
 };
 class ListIterator {
@@ -107,40 +115,42 @@ private:
 	const CircularList& list;//existing list
 };
 
-//return av
-Node* CircularList::GetNode(){
-    if(av== nullptr){ //가용 리스트가 비어있을 경우
-        av = new Node(); //새 노드를 만들고
-        av->link = last->link; //만들어진 새 노드는 첫번째를 가리키게 하고
-        last->link = av; //마지막 노드는 새 노드를 가리키게 한다.
+Node* CircularList::GetNode() {
+    if (av == nullptr) {
+        av = new Node();
+        av->link = last->link;
+        last->link = av;
         return av;
-    } else{ //av가 nullptr이 아닌 경우 - 즉, GetNode로 사용되었다고 생각하자.
-
-        Node* buf = av;
+    } else {
+        Node* rav = av;
         av = av->link;
-        return buf;
+        return rav;
+
     }
 }
 
-//현재 노드를 사용가능하게 변경
-void CircularList::RetNode(Node* x){
-    /*
-     * 0번, 1번 노드가 사용중이고 2번 노드가 사용가능 노드일 경우
-     * 1번 노드를 반환한다고 할 때
-     * 현재 av 는 2번 노드에 위치해있다.
-     *
-     * 1번 노드의 link를 av에 연결하고 (이때 av는 0번노드를 가리키고 있다)
-     * 2번 노드(av)를 1번 노드가 되도록 한다
-     *
-     * 그럼 그냥 노드를 새로 만들고 제거하고 하는 것 아닌가?
-     */
+void CircularList::RetNode(Node* x)
+{
+
+    Node* q = last;
+
+    while(q->link != x){
+        q = q->link;
+    }
+    if(q->link != q){ //하나만 있지 않을 때
+        q->link = x->link;
+
+    } else { //노드가 하나만 있을 때
+        last = nullptr;
+    }
+
     x->link = av;
     av = x;
 
 }
 ostream& operator<<(ostream& os, CircularList& l)
 {
-	ListIterator li(l);
+    ListIterator li(l);
 
     if(li.NotNull()){
         os<<li.GetCurrent()<<endl;
@@ -149,86 +159,132 @@ ostream& operator<<(ostream& os, CircularList& l)
     }
 
     return os;
+}
+void CircularList::Show() { // 전체 리스트를 순서대로 출력한다.
+    Node *first = last->link;
+    Node *p = first->link;
+
+    cout << "[ ";
+
+    if (p == first) { //1개만 존재한다면
+        cout << p->data;
+    } else {
+        cout << first->data;
+
+        while (p != first) { //원형을 순환해서 처음이 될 때까지 반복한다.
+            cout << p->data;
+            p = p->link;
+        }
+
+
+    }
+
+     cout << " ]" << endl;
+}
+void CircularList::Add(Employee* element) // 임의 값을 삽입할 때 리스트가 오름차순으로 정렬이 되도록 한다
+{
+    Node *newNode = GetNode();
+    newNode->data = *element;
+    Node *first = last->link;
+    Node *p = first->link;
+    Node *q = first;
+
+    if (q == nullptr) {
+        last = newNode;
+        last->link = newNode;
+    } else if (q->link == first) {//한개만 존재
+        last->link = newNode;
+        newNode->link = first;
+
+        if(newNode < first){
+            last = first;
+        } else {
+            last = newNode;
+        }
+
+    } else {
+        while (q->link != first) {
+            if (newNode <= q) {
+                last->link = newNode;
+                newNode->link = q;
+            } else if (newNode > q && newNode <= p) {
+                q->link = newNode;
+                newNode->link = p;
+            } else if (newNode > p) {
+                newNode->link = p->link;
+                p->link = newNode;
+            } else {
+                q = q->link;
+                p = p->link;
+            }
+        }
+
+    }
 
 }
-void CircularList::Show() {
-	Node* first = last->link;
-	Node* p = first->link;
-    cout<<endl;
-    cout<<"[ ";
-    while(p->link != first){ //원형을 순환해서 처음이 될 때까지 반복한다.
-        cout<<p->data;
+bool CircularList::Search(string eno) { // sno를 갖는 레코드를 찾기
+    Node* p = last->link;
+    while(p->link != last){
+        if(p->data.eno == eno){
+            return true;
+        }
         p = p->link;
     }
-    cout<<" ]"<<endl;
-}
 
-//새로운 노드를 더한다.
-void CircularList::Add(Employee* element)
+    return false;
+}
+bool CircularList::Delete(string eno) // delete the element
 {
-	Node* newNode = GetNode();
-    newNode->data = *element;
-	Node* first = last->link; //처음 노드
-	Node* p = first->link; //처음의 다음 노드
-	Node* q = first; //처음 노드
-
-
-
-}
-bool CircularList::Search(string eno) {
-	Node* first = last->link;
-	Node* p = first->link;
-
-    while(p->link != first){
+    Node* p = last->link;
+    while(p->link != last){
         if(p->data.eno == eno){
+            RetNode(p);
             return true;
         }
     }
 
     return false;
+}
+void CircularList::Erase() {
+    Node* first = last->link;
+    first->link = av;
+    av = first;
+    last = nullptr;
 
 }
-//삭제 성공 시 true 반환
-bool CircularList::Delete(string eno) // delete the element
-{
-	Node* first = last->link;
-	Node* p = first->link;
-	Node* q = first;
-    if(q->data.eno != eno){ //처음이 아닐 때
-       while(p->link != first){
-           if(p->data.eno == eno){ //삭제할 em을 찾았다면
-               q->link = p->link; //이전의 q가 지금의 다음을 가리키도록 하여서 제거
-           }
-       }
-       //리스트 전체에서 찾지 못한 경우
-       return false;
-    } else { //first의 값이 삭제하고자 하는 것일 경우
-        last->link = p;
-        return true;
-    }
+CircularList& CircularList::operator+(CircularList& lb) {
+	Employee* p, * q;
+	ListIterator Aiter(*this); ListIterator Biter(lb);
+	CircularList lc;
+	p = Aiter.First(); q = Biter.First();
 
+    //TODO : 합치기
 
 }
 
 ListIterator::ListIterator(const CircularList& lst) : list(lst), current(lst.last->link->link) {
 }
 bool ListIterator::NotNull() {
-	if (current != list.last->link)
-		return true;
-	else
-		return false;
+    if (current != list.last->link){
+        return true;
+    } else{
+        return false;
+    }
+
 }
 bool ListIterator::NextNotNull() {
-	if (current->link != list.last->link)
-		return true;
-	else
-		return false;
+    if (current->link != list.last->link){
+        return true;
+    } else{
+        return false;
+    }
+
 }
 Employee* ListIterator::First() {
-	return &list.last->link->link->data;
+    return &list.last->link->link->data;
 }
-Employee* ListIterator::Next() { //TODO : 완성시켜야함...?
-	Employee* e = &current->data;
+Employee* ListIterator::Next() {
+    Employee* e = &current->data;
 	current = current->link;
 	return e;
 }
@@ -266,8 +322,26 @@ bool ListIterator::operator != (const ListIterator right) const {
 bool ListIterator::operator == (const ListIterator right) const {
 	return current == right.current;
 }
-//int printAll(const List& l); //list iteraotr를 사용하여 작성
-//int sumProductFifthElement(const List& l); //list iterator를 사용해서 작성
+int printAll(const CircularList& l) {//list iterator를 사용하여 작성하는 연습
+    ListIterator li(l);
+    cout<<"[ ";
+
+    if(li.NotNull()){
+        while(li.NextNotNull()){
+            cout<<li.GetCurrent();
+            li.Next();
+            if(li.NextNotNull()){
+                cout<<", ";
+            }
+        }
+    }
+
+    cout<<" ]"<<endl;
+
+    return 1;
+
+}
+    //int sumProductFifthElement(const List& l);//list iterator를 사용하여 작성하는 연습
 int sum(const CircularList& l)
 {
 	ListIterator li(l);
@@ -280,11 +354,13 @@ int sum(const CircularList& l)
         }
     }
     return ans;
+
 }
 
 double avg(const CircularList& l)
 {
 	ListIterator li(l);
+
 
     if(li.NotNull()){
         int sumAll = sum(l);
@@ -298,7 +374,6 @@ double avg(const CircularList& l)
     } else {
         return 0;
     }
-
 }
 
 int min(const CircularList& l)
@@ -333,14 +408,12 @@ int max(const CircularList& l)
 }
 
 enum Enum {
-	Add0,Add1, Delete, Show, Search, SUM, AVG, MIN, MAX,Merge, Exit
+	Add0, Add1, Delete, Show, Search, Merge, SUM, AVG, MIN, MAX, Exit
 };
 
-Node* CircularList::av = NULL;
+Node* CircularList::av = NULL;//static 변수의 초기화 방법을 기억해야 한다
 
-
-
-int main(void) {
+int main() {
 	Enum menu; // 메뉴
 	int selectMenu, num;
 	string eno, ename;
