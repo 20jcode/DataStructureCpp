@@ -20,26 +20,23 @@ public:
 	bool operator==(Employee&);
 };
 ostream& operator<<(ostream& os, Employee& emp) {
-    os<<"eno : "<<emp.eno<<"ename : "<<emp.ename<<endl;
+    os<<"[ 사원 번호 : "<<emp.eno<<", 사원 이름 : "<<emp.ename<<" ]"<<endl;
     return os;
 }
 bool Employee::operator==(Employee& emp) {
-
-    if(eno != emp.eno){
+    if(eno != emp.eno) {
         return false;
     }
-    if(ename != emp.ename){
+    if(ename != emp.ename) {
         return false;
     }
     return true;
 }
 bool Employee::operator<(Employee& emp) {
-
-    if(stoi(eno) < stoi(emp.eno)){
+    if(eno < emp.eno) {
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
 class Node {
 	friend class LinkedList;
@@ -64,42 +61,49 @@ public:
 	bool Search(string);
 	LinkedList& operator+(LinkedList&);
 };
+
 void LinkedList::Show() { // 전체 리스트를 순서대로 출력한다.
 	Node* p = first;
 
-    while(p->link == nullptr){
-        cout<<p->data<<", ";
+    while(p != nullptr) {
+        cout << p->data;
+        /*
+        if (p->link != nullptr) {
+            cout << ", ";
+        }
+         */
         p = p->link;
     }
-    cout<<p->data<<endl;
 
 }
-void LinkedList::Add(Employee element) // 임의 값을 삽입할 때 리스트가 오름차순으로 정렬이 되도록 한다
-{
+void LinkedList::Add(Employee element){ // 임의 값을 삽입할 때 리스트가 오름차순으로 정렬이 되도록 한다
+
 	Node* newNode = new Node(element);
 
-    if(first == nullptr){ //리스트가 비었다면
+    Node* p = first;
+
+    if(p == nullptr) {
         first = newNode;
+        return;
     } else {
-        Node* before = nullptr;
-        Node* now = first;
-
-        while(now != nullptr){
-            if(element<now->data){
-                first = newNode;
-                newNode->link = now;
-                if(before != nullptr){
-                    before->link = newNode;
+        if(newNode->data < p->data || newNode->data == p->data) {
+            newNode->link = p;
+            first = newNode;
+            return;
+        } else {
+            while(p->link != nullptr) {
+                if(newNode->data <p->link->data) {
+                   newNode->link = p->link;
+                   p->link = newNode;
+                   return;
+                } else {
+                    p = p->link;
                 }
-            } else if(now->data == element) {
-
-            } else { // now < element 인 경우
-
             }
+            p->link = newNode;
 
         }
     }
-
 }
 bool LinkedList::Search(string eno) { // sno를 갖는 레코드를 찾기
 	Node* ptr = first;
@@ -121,7 +125,7 @@ enum Enum {
 	Add1, Add2, Delete, Show, Search, Merge, Exit
 };
 
-void main() {
+int main() {
 	Enum menu; // 메뉴
 	int selectMenu, num;
 	string eno, ename;

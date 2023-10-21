@@ -83,7 +83,6 @@ void LinkedList::Add(int element)
 
     }
 
-
 }
 //발견하면 true 반환
 bool LinkedList::Search(int data) {
