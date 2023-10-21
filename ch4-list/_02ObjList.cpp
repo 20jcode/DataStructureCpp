@@ -108,16 +108,61 @@ void LinkedList::Add(Employee element){ // 임의 값을 삽입할 때 리스트
 bool LinkedList::Search(string eno) { // sno를 갖는 레코드를 찾기
 	Node* ptr = first;
 
+    while(ptr != nullptr){
+        if(ptr->data.eno == eno){
+            return true;
+        }
+        ptr = ptr->link;
+    }
+    return false;
+
 }
 bool LinkedList::Delete(string eno) // delete the element
 {
 	Node* q, * current = first;
 	q = current;
 
+    while(current != nullptr){
+        if(current->data.eno == eno){
+            q->link = current->link;
+            return true;
+        }
+        q = current;
+        current = current->link;
+    }
+    return false;
+
 }
 LinkedList& LinkedList::operator+(LinkedList& lb) {
 	LinkedList lc;
 	Node* a = first, * b = lb.first;
+
+    while(a->link != nullptr && b->link != nullptr){
+        if(a->data < b->data){
+            lc.Add(a->data);
+            a = a->link;
+        } else if(a->data == b->data){
+            lc.Add(a->data);
+            lc.Add(a->data);
+            a = a->link;
+            b = b->link;
+        } else {
+            lc.Add(b->data);
+            b = b->link;
+        }
+    }
+
+    if(a->link == nullptr){
+        while(b->link != nullptr){
+            lc.Add(b->data);
+            b = b->link;
+        }
+    } else {
+        while(a->link != nullptr){
+            lc.Add(a->data);
+            a = a->link;
+        }
+    }
 
 
 }
