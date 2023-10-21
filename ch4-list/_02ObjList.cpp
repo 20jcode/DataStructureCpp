@@ -137,7 +137,7 @@ LinkedList& LinkedList::operator+(LinkedList& lb) {
 	LinkedList lc;
 	Node* a = first, * b = lb.first;
 
-    while(a->link != nullptr && b->link != nullptr){
+    while(a != nullptr && b != nullptr){
         if(a->data < b->data){
             lc.Add(a->data);
             a = a->link;
@@ -152,18 +152,19 @@ LinkedList& LinkedList::operator+(LinkedList& lb) {
         }
     }
 
-    if(a->link == nullptr){
-        while(b->link != nullptr){
+    if(a == nullptr){
+        while(b != nullptr){
             lc.Add(b->data);
             b = b->link;
         }
     } else {
-        while(a->link != nullptr){
+        while(a != nullptr){
             lc.Add(a->data);
             a = a->link;
         }
     }
 
+    return lc;
 
 }
 enum Enum {
