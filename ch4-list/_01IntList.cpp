@@ -55,42 +55,26 @@ void LinkedList::Add(int element)
 {
 	Node* newNode = new Node(element);
 
-    if(first == nullptr){ //첫번째 노드가 없는경우
-        first = newNode; //추가된 노드를 첫번째 노드로 한다.
-    } else{
+    Node* p = first;
 
-        Node* p = first; //현재값
-        Node* q = first->link; //다음값
-        if(q == nullptr){ //초기에 1개의 노드만 리스트에 있는 경우
-            if(p->data > element){ //입력받은 값이 data보다 작은 경우
+    if(p == nullptr){
+        first = newNode;
+    } else {
+        while(p != nullptr){
+            if(newNode<=p){
                 newNode->link = p;
-                first = newNode;
-            } else { //입력받은 값이 data보다 크거나 같은 경우
+                if(p == first){
+                    first = newNode;
+                }
+            } else if(p->link<newNode){
+                newNode->link = p->link;
                 p->link = newNode;
+            } else {
+                p = p->link;
             }
-        }
-        while(q != nullptr){ //다음값이 없을때까지
-            if(p->data >= element){ // 현재값 >= element
-                //즉, 첫번째 값보다 element가 작은 경우
-
-                newNode->link = p;
-                first = newNode;
-            }
-            if(p->data<element && q->data>=element){ // 현재값 < element <= 다음값
-                p->link = newNode;
-                newNode->link = q;
-                break;
-            } else { //그렇지 않는 경우
-                p = q;
-                q = q->link;
-            }
-
-        }
-        //element가 마지막 값보다 큰 경우
-        if(p->data < element){
-            p->link = newNode;
         }
     }
+
 
 }
 //발견하면 true 반환
@@ -165,6 +149,7 @@ int main() {
 		switch (static_cast<Enum>(selectMenu)) {
 		case Add1:
 			data = rand() % 49;
+            cout <<"추가값 : "<<data<<endl;
 			la.Add(data);
 			break;
 		case Add2:
