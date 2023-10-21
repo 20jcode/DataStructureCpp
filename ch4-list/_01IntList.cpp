@@ -54,25 +54,33 @@ void LinkedList::Show() { //리스트 내부의 전체 목록을 보여준다.
 void LinkedList::Add(int element)
 {
 	Node* newNode = new Node(element);
-
     Node* p = first;
 
     if(p == nullptr){
         first = newNode;
-    } else {
-        while(p != nullptr){
-            if(newNode<=p){
+    } else if(newNode->data<p->data){ //원소가 1개이면서 newNode가 더 작을때
+        newNode->link = first;
+        first = newNode;
+    } else{
+        while(p->link != nullptr){
+            if(newNode->data<=p->data){ // newNode <= p <= p->link
                 newNode->link = p;
                 if(p == first){
                     first = newNode;
                 }
-            } else if(p->link<newNode){
+                return;
+            } else if(newNode->data<=p->link->data){ // p < newNode <= p->link
                 newNode->link = p->link;
                 p->link = newNode;
-            } else {
+                return;
+
+            } else { // p <= p->link < newNode
                 p = p->link;
             }
         }
+        p->link = newNode;
+
+
     }
 
 

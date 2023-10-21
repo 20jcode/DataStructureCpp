@@ -79,4 +79,37 @@ if 문으로 조건을 걸어줬다.
 새로운 포인터나 조건문을 더 거는 것은 극한의 이득을 취할 수 없기떄문이다.
 
 ---
+```
+void LinkedList::Add(int element)
+{
+	Node* newNode = new Node(element);
+
+    Node* p = first;
+
+    if(p == nullptr){
+        first = newNode;
+    } else {
+        while(p != nullptr){
+            if(newNode<=p){
+                newNode->link = p;
+                if(p == first){
+                    first = newNode;
+                }
+            } else if(p->link<newNode){
+                newNode->link = p->link;
+                p->link = newNode;
+            } else {
+                p = p->link;
+            }
+        }
+    }
+//Debug
+//cout<<"newNode : "<<newNode->data<<"p : "<<p->data<<" p->link : "<<p->link->data<<endl;
+
+}
+
+```
+
+이런식으로 하면 p->link == nullptr이면서
+p<newNode 일 때 문제가 생긴다.
 
