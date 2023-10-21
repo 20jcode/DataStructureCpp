@@ -177,7 +177,7 @@ bool LinkedList::Delete(string eno) // delete the element
     return false;
 
 }
-LinkedList& LinkedList::operator+(LinkedList& lb) {
+LinkedList& LinkedList::operator+(LinkedList& lb) { //TODO : 문제 발생
 	Employee* p, * q;
 	ListIterator Aiter(*this); ListIterator Biter(lb);
 	LinkedList lc;
@@ -186,12 +186,12 @@ LinkedList& LinkedList::operator+(LinkedList& lb) {
     //제일 간단한 방법
     //TODO : 성능 좀 더??
 
-    while(Aiter.NotNull()){
+    while(Aiter.NextNotNull()){
         lc.Add(*p);
         p = Aiter.Next();
     }
 
-    while(Biter.NotNull()){
+    while(Biter.NextNotNull()){
         lc.Add(*q);
         q = Biter.Next();
     }
@@ -261,6 +261,15 @@ bool ListIterator::operator == (const ListIterator right) const {
 int sum(const LinkedList& l)//올바른지 코드 점검이 필요함
 {
 	ListIterator li(l);
+
+    int ans = 0;
+
+    while(li.NotNull()){
+        ans = ans + li.GetCurrent()->getSalary();
+        li.Next();
+    }
+
+    return ans;
 
 }
 
