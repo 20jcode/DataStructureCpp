@@ -112,19 +112,44 @@ private:
 	const CircularList& list;//existing list
 };
 
-ostream& operator<<(ostream& os, CircularList& l)
+ostream& operator<<(ostream& os, CircularList& l) //현재 리스트를 출력한다.
 {
 	ListIterator li(l);
+
+    os<<li.GetCurrent()<<endl;
 
 }
 void CircularList::Show() { // 전체 리스트를 순서대로 출력한다.
 	Node* p = first->link;
+
+    cout<<"[ "<<first->data;
+
+    while(p != nullptr){
+        cout<<p->data;
+        if(p->link != nullptr){
+            cout<<", ";
+        }
+        p = p->link;
+    }
+
+    cout<<" ]"<<endl;
 
 }
 void CircularList::Add(Employee* element) // 임의 값을 삽입할 때 리스트가 오름차순으로 정렬이 되도록 한다
 {
 	Node* newNode = new Node(*element);
 	Node* p = first->link, * q = first;
+
+    if(first == nullptr){ //리스트 내부가 비어있을 때
+        newNode = first;
+        first->link = newNode;
+    } else {
+        if(p == q){ //리스트 내부가 하나만 있을 때
+
+        }
+
+
+    }
 
 }
 bool CircularList::Search(string eno) { // sno를 갖는 레코드를 찾기
