@@ -46,13 +46,13 @@ bool Employee::operator==(Employee& emp) {
     return true;
 }
 bool Employee::operator<(Employee& emp) {
-    if(eno <emp.eno){
+    if(stoi(eno) <stoi(emp.eno)){
         return true;
     } else {
         return false;
     }
 }
-char Employee::compare(const Employee* emp) const {
+char Employee::compare(const Employee* emp) const { //문자열을 반환해서 대소관계를 나타낸다.
     if(this<emp){
         return '<';
     } else if(this==emp){
@@ -177,23 +177,49 @@ bool LinkedList::Delete(string eno) // delete the element
     return false;
 
 }
-LinkedList& LinkedList::operator+(LinkedList& lb) { //TODO : 문제 발생
+LinkedList& LinkedList::operator+(LinkedList& lb) { //ok
 	Employee* p, * q;
 	ListIterator Aiter(*this); ListIterator Biter(lb);
 	LinkedList lc;
 	p = Aiter.First(); q = Biter.First();
 
-    //제일 간단한 방법
-    //TODO : 성능 좀 더??
+    //두가지 Iterator에서 작은 값은 lc first에서 시작된 포인터로 연결시켜주기
+    //큰 값은 그대로 두면서 앞으로 진행해가는 방향
 
-    while(Aiter.NextNotNull()){
-        lc.Add(*p);
-        p = Aiter.Next();
+    //더하는 연산을 하는 두가지 리스트 전부 null이 아니다. (리스트를 생성하는 순간 입력데이터가 없는 경우 newNode를 진행하므로)
+    //아니다. Null일 수 있다.
+
+    //lc에 Add 메소드를 사용해서 연산을 해야할까 -> 새로운 메모리 할당으로 인한 손해 + 다시 정렬상태를 위한 연산 진행
+
+    //lc에 그냥 Node메모리를 할당해서 first와 포인터로 연결해주어야하나?
+
+
+
+    while(Aiter.NotNull() && Biter.NotNull()){
+        if(p>q){
+            lc.Add(*q);
+            q  = Biter.Next();
+        } else if (p == q){
+            lc.Add(*p);
+            lc.Add(*q);
+            p = Aiter.Next();
+            q = Biter.Next();
+        } else { // p<q
+            lc.Add(*p);
+            p = Aiter.Next();
+        }
     }
 
-    while(Biter.NextNotNull()){
-        lc.Add(*q);
-        q = Biter.Next();
+    if(Aiter.NotNull()){
+        while(Aiter.NotNull()){
+            lc.Add(*Aiter.GetCurrent());
+            Aiter.Next();
+        }
+    } else {
+        while(Biter.NotNull()){
+            lc.Add(*Biter.GetCurrent());
+            Biter.Next();
+        }
     }
 
     return lc;
@@ -258,6 +284,31 @@ bool ListIterator::operator == (const ListIterator right) const {
 }
 //int printAll(const List& l);//list iterator를 사용하여 작성하는 연습
 //int sumProductFifthElement(const List& l);//list iterator를 사용하여 작성하는 연습
+
+int printAll(const LinkedList& l){
+    ListIterator li(l);
+
+    while(li.NotNull()){
+        cout<<li.GetCurrent()<<endl;
+        li.Next();
+    }
+
+    return 0;
+}
+
+//각 salary에 15를 곱한다음 전부 더해서 반환
+int sumProductFifthElement(const LinkedList& l){
+    ListIterator li(l);
+    int ans = 0;
+
+    while(li.NotNull()){
+        ans += li->getSalary()*15;
+        li.Next();
+    }
+
+    return ans;
+}
+
 int sum(const LinkedList& l)//올바른지 코드 점검이 필요함
 {
 	ListIterator li(l);
@@ -265,7 +316,7 @@ int sum(const LinkedList& l)//올바른지 코드 점검이 필요함
     int ans = 0;
 
     while(li.NotNull()){
-        ans = ans + li.GetCurrent()->getSalary();
+        ans = ans + li->getSalary();
         li.Next();
     }
 
@@ -277,11 +328,33 @@ double avg(const LinkedList& l)//올바른지 코드 점검이 필요함
 {
 	ListIterator li(l);
 
+    int ans = 0;
+    int counter = 0;
+
+    while(li.NotNull()){
+        ans += li->getSalary();
+        counter++;
+        li.Next();
+    }
+
+    return ((double)ans)/counter;
+
 }
 
 int min(const LinkedList& l)//올바른지 코드 점검이 필요함
 {
 	ListIterator li(l);
+
+    int ans = li->getSalary();
+
+    while(li.NotNull()){
+        if(ans>li->getSalary()){
+            ans = li->getSalary();
+        }
+        li.Next();
+    }
+
+    return ans;
 
 }
 
@@ -289,6 +362,15 @@ int max(const LinkedList& l)//올바른지 코드 점검이 필요함
 {
 	ListIterator li(l);
 
+    int ans = li->getSalary();
+
+    while(li.NotNull()){
+        if(ans<li->getSalary()){
+            ans = li->getSalary();
+        }
+        li.Next();
+    }
+    return ans;
 }
 
 enum Enum {
