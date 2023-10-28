@@ -33,7 +33,7 @@ bool Employee::operator==(Employee& emp) {
     return true;
 }
 bool Employee::operator<(Employee& emp) {
-    if(eno < emp.eno) {
+    if(stoi(eno) < stoi(emp.eno)) {
         return true;
     }
     return false;
@@ -138,29 +138,29 @@ LinkedList& LinkedList::operator+(LinkedList& lb) {
 	Node* a = first, * b = lb.first;
 
     while(a != nullptr && b != nullptr){
-        if(a->data < b->data){
+        if(a->data < b->data){ // a<b
             lc.Add(a->data);
             a = a->link;
-        } else if(a->data == b->data){
+        } else if(a->data == b->data){ // a==b
             lc.Add(a->data);
-            lc.Add(a->data);
+            lc.Add(b->data);
             a = a->link;
             b = b->link;
-        } else {
+        } else { // a>b
             lc.Add(b->data);
             b = b->link;
         }
     }
 
-    if(a == nullptr){
-        while(b != nullptr){
-            lc.Add(b->data);
-            b = b->link;
-        }
-    } else {
+    if(a != nullptr){
         while(a != nullptr){
             lc.Add(a->data);
             a = a->link;
+        }
+    } else {
+        while(b != nullptr){
+            lc.Add(b->data);
+            b = b->link;
         }
     }
 
