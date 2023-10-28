@@ -29,16 +29,38 @@ public:
 	}
 };
 ostream& operator<<(ostream& os, Employee& emp) {
-
+    os<<"[ eno : "<<emp.eno<<", ename : "<<emp.ename<<", salary : "<<emp.salary<<" ]";
+    return os;
 }
 bool Employee::operator==(Employee& emp) {
-
+    if(eno != emp.eno){
+        return false;
+    }
+    if(ename != emp.ename){
+        return false;
+    }
+    if(salary != emp.salary){
+        return false;
+    }
+    return true;
 }
 bool Employee::operator<(Employee& emp) {
 
+    if(stoi(eno)<stoi(emp.eno)){
+        return true;
+    } else {
+        return false;
+    }
 }
 char Employee::compare(const Employee* emp) const {
 
+    if(this<emp){
+        return '<';
+    } else if (this == emp){
+        return '=';
+    } else {
+        return '>';
+    }
 
 }
 class Node {
