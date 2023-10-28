@@ -19,3 +19,4 @@ add_executable(ch4-3-03objIter ch4-list/_03ObjIter.cpp)
 
 add_executable(work5List ch4-list/availableList.cpp)
 add_executable(avHomework ch4-list/homeworkAv.cpp)
+add_executable(ch4-4-CircleIter ch4-list/_04CircleIter.cpp)
