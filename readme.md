@@ -30,3 +30,9 @@ add_executable(test1App src/test1.cpp)
 2. 다항식 계산 및 출력
 
 ### ch3 Stack
+
+### ch4 List
+
+1. 정수형태의 리스트 구현하기
+2. 객체형태의 리스트 구현하기
+3. 객체형태의 리스트에 iterator 사용하기
