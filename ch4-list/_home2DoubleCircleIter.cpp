@@ -34,19 +34,45 @@ public:
 	}
 };
 ostream& operator<<(ostream& os, Employee& emp) {
-
+    os<<"[ eno : "<<emp.eno<<", ename : "<<emp.ename<<", salary : "<<emp.salary<<" ]";
+    return os;
 }
 bool Employee::operator==(Employee& emp) {
 
+    if(eno != emp.eno){
+        return false;
+    }
+    if(ename != emp.ename){
+        return false;
+    }
+    if(salary != emp.salary){
+        return false;
+    }
+    return true;
 }
 bool Employee::operator<(Employee& emp) {
-
+    if(eno < emp.eno){
+        return true;
+    } else {
+        return false;
+    }
 }
 bool Employee::operator>(Employee& emp) {
-
+    if(eno > emp.eno){
+        return true;
+    } else {
+        return false;
+    }
 }
 char Employee::compare(const Employee* emp) const {
 
+    if(this>emp){
+        return '>';
+    } else if (this<emp){
+        return '<';
+    } else {
+        return '=';
+    }
 
 }
 template<class T> class CircularDoublyList;
@@ -71,8 +97,8 @@ class CircularDoublyList {
 	friend class CircularDoublyListIterator<T>;
 public:
 	CircularDoublyList() { last = new DoublyListNode<T>; }
-	template<class T>
-	friend ostream& operator<<(ostream&, CircularDoublyList<T>&);
+	template<class U>
+	friend ostream& operator<<(ostream&, CircularDoublyList<U>&);
 	bool Delete(string);
 	void Show();
 	void Add(T*);//sno로 정렬되도록 구현
