@@ -51,14 +51,14 @@ bool Employee::operator==(Employee& emp) {
     return true;
 }
 bool Employee::operator<(Employee& emp) {
-    if(eno < emp.eno){
+    if(stoi(eno) < stoi(emp.eno)){
         return true;
     } else {
         return false;
     }
 }
 bool Employee::operator>(Employee& emp) {
-    if(eno > emp.eno){
+    if(stoi(eno) > stoi(emp.eno)){
         return true;
     } else {
         return false;
@@ -133,15 +133,45 @@ template<class T>
 DoublyListNode<T>* CircularDoublyList<T>::GetNode()
 { //provide a node for use
 
+    if(av == nullptr){ // av가 지정되어있지않는 경우
+        return new DoublyListNode<T>; //그냥 새로 만들어서 준다.
+    } else {
+        DoublyListNode<T> * getN = av;
+        av = av->rlink;
+
+        return getN;
+    }
+
 }
 template<class T>
 void CircularDoublyList<T>::RetNode(DoublyListNode<T>* x)
 { //free the node pointed to by x
+    av->llink = x;
+    x->rlink = av;
+    x->llink = nullptr;
+    av = x;
+
+    //현재 av에서 왼쪽에 x를 연결해주고
+    //반환받은 x노드의 오른쪽에 현재 av를 연결하고
+    //x의 왼쪽을 nullptr로 초기화해주고
+    //av를 이동시켜준다.
 
 }
 template<class T>
 void CircularDoublyList<T>::Show() { // 전체 리스트를 순서대로 출력한다.
 
+    DoublyListNode<T>* p = last->rlink;
+
+    cout<<"[ ";
+
+    while(p != last){
+        cout<<p;
+        if(p->llink != last){
+            cout<<", ";
+        }
+        p = p->llink;
+    }
+    cout<<" ]";
 }
 template<class T>
 void CircularDoublyList<T>::Add(T* element) // 임의 값을 삽입할 때 리스트가 오름차순으로 정렬이 되도록 한다
@@ -149,6 +179,22 @@ void CircularDoublyList<T>::Add(T* element) // 임의 값을 삽입할 때 리�
 	DoublyListNode<T>* newNode = GetNode(); newNode->data = *element;
 	DoublyListNode<T>* first = last->rlink;
 	DoublyListNode<T>* p = first->rlink;
+
+    if(newNode->data<first->data || newNode->data == first->data){ // 첫 시작 부분보다 작은 경우
+        last->rlink = newNode;
+        newNode->rlink = first;
+        newNode->llink = last;
+        first->llink = newNode;
+
+        first = newNode;
+        last = first->llink;
+    } else {
+        while(p != first){
+            if(p->llink->data<newNode->data && (p->data<newNode->data || p->data==newNode->data)){
+
+            }
+        }
+    }
 
 }
 template<class T>
@@ -238,7 +284,7 @@ DoublyListNode<T>* CircularDoublyList<T>::av = 0;
 /*
 Node* CircularDoublyList::av = NULL;//static 변수의 초기화 방법을 기억해야 한다
 */
-void main() {
+int main() {
 	Enum menu; // 메뉴
 	int selectMenu, num;
 	string eno, ename;
