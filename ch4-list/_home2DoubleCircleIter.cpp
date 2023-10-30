@@ -161,6 +161,7 @@ void CircularDoublyList<T>::RetNode(DoublyListNode<T>* x)
     x->llink = nullptr;
     av = x;
 
+
     //현재 av에서 왼쪽에 x를 연결해주고
     //반환받은 x노드의 오른쪽에 현재 av를 연결하고
     //x의 왼쪽을 nullptr로 초기화해주고
@@ -176,11 +177,13 @@ void CircularDoublyList<T>::Show() { // 전체 리스트를 순서대로 출력�
 
     while(p != last){
         cout<<p->data;
-        if(p->llink != last){
+        if(p->rlink != last){
             cout<<", ";
         }
         p = p->rlink;
     }
+    cout<<p->data;
+
     cout<<" ]";
 }
 template<class T>
@@ -194,8 +197,13 @@ void CircularDoublyList<T>::Add(T* element) // 임의 값을 삽입할 때 리�
     //하지만 내부가 null일 수 있다.
     //template이므로, 어떤 형식의 객체가 올 지 모른다.
 
+    if(first->data.eno.empty()){ //즉, nullptr인 경우에
+        last = newNode;
+        last->rlink = newNode;
+        last->llink = newNode;
+        return;
 
-    if(newNode->data<first->data || newNode->data == first->data){ // 첫 시작 부분보다 작은 경우
+    } else if(newNode->data<first->data || newNode->data == first->data){ // 첫 시작 부분보다 작은 경우
         last->rlink = newNode;
         newNode->rlink = first;
         newNode->llink = last;
@@ -206,7 +214,7 @@ void CircularDoublyList<T>::Add(T* element) // 임의 값을 삽입할 때 리�
         return;
     } else {
         while(p != first){
-            if(p->llink->data<newNode->data && (p->data<newNode->data || p->data==newNode->data)){ // llink < newNode <= p
+            if(p->llink->data<newNode->data && (p->data>newNode->data || p->data==newNode->data)){ // llink < newNode <= p
                 p->llink->rlink = newNode;
                 newNode->llink = p->llink;
                 newNode->rlink = p;
