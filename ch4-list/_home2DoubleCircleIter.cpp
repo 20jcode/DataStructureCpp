@@ -261,16 +261,23 @@ bool CircularDoublyList<T>::Delete(string eno) // delete the element
 	DoublyListNode<T>* first = last->rlink;
 	DoublyListNode<T>* p = first->rlink;
 
-    while(p != first){
-        if(p->llink->data.eno == eno){
+    if(first->data.eno == eno){ //처음에 삭제 대상이 있는 경우
+        last->rlink = first->rlink;
+        first->rlink->llink = last;
 
-            p->rlink->llink = p->llink;
-            p->llink->rlink = p->rlink;
+        RetNode(first);
+        return true;
+    } else {
+        while(p != first){
+            if(p->data.eno == eno){
+                p->llink->rlink = p->rlink;
+                p->rlink->llink = p->llink;
 
-            RetNode(p);
-            return true;
-        } else {
-            p = p->rlink;
+                RetNode(p);
+                return true;
+            } else {
+                p = p->rlink;
+            }
         }
     }
     return false;
