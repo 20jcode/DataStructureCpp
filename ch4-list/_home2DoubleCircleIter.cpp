@@ -39,18 +39,21 @@ ostream& operator<<(ostream& os, Employee& emp) {
 }
 bool Employee::operator==(Employee& emp) {
 
-    if(eno != emp.eno){
+    if(eno != emp.eno) { //eno만으로 같고 다름을 비교한다.
         return false;
+    } else {
+        return true;
     }
-    if(ename != emp.ename){
-        return false;
-    }
-    if(salary != emp.salary){
-        return false;
-    }
-    return true;
+
 }
 bool Employee::operator<(Employee& emp) {
+    if(eno.empty()){
+        return true;
+    }
+    if(emp.eno.empty()){
+        return false;
+    }
+
     if(stoi(eno) < stoi(emp.eno)){
         return true;
     } else {
@@ -58,6 +61,13 @@ bool Employee::operator<(Employee& emp) {
     }
 }
 bool Employee::operator>(Employee& emp) {
+    if(eno.empty()){
+        return false;
+    }
+    if(emp.eno.empty()){
+        return true;
+    }
+
     if(stoi(eno) > stoi(emp.eno)){
         return true;
     } else {
@@ -165,11 +175,11 @@ void CircularDoublyList<T>::Show() { // 전체 리스트를 순서대로 출력�
     cout<<"[ ";
 
     while(p != last){
-        cout<<p;
+        cout<<p->data;
         if(p->llink != last){
             cout<<", ";
         }
-        p = p->llink;
+        p = p->rlink;
     }
     cout<<" ]";
 }
@@ -180,6 +190,11 @@ void CircularDoublyList<T>::Add(T* element) // 임의 값을 삽입할 때 리�
 	DoublyListNode<T>* first = last->rlink;
 	DoublyListNode<T>* p = first->rlink;
 
+    //무조건 노드는 1개이상 있게 된다 -> 생성자의 영향
+    //하지만 내부가 null일 수 있다.
+    //template이므로, 어떤 형식의 객체가 올 지 모른다.
+
+
     if(newNode->data<first->data || newNode->data == first->data){ // 첫 시작 부분보다 작은 경우
         last->rlink = newNode;
         newNode->rlink = first;
@@ -188,12 +203,27 @@ void CircularDoublyList<T>::Add(T* element) // 임의 값을 삽입할 때 리�
 
         first = newNode;
         last = first->llink;
+        return;
     } else {
         while(p != first){
-            if(p->llink->data<newNode->data && (p->data<newNode->data || p->data==newNode->data)){
-
+            if(p->llink->data<newNode->data && (p->data<newNode->data || p->data==newNode->data)){ // llink < newNode <= p
+                p->llink->rlink = newNode;
+                newNode->llink = p->llink;
+                newNode->rlink = p;
+                p->llink = newNode;
+                return;
+            } else {
+                p = p->rlink;
             }
         }
+        //리스트 내부의 모든 값보다 newNode가 큰 경우
+        last->rlink = newNode;
+        newNode->llink = last;
+        newNode->rlink = first;
+        first->llink = newNode;
+
+        last = newNode;
+        return;
     }
 
 }
@@ -202,6 +232,15 @@ bool CircularDoublyList<T>::Search(string eno) { // sno를 갖는 레코드를 �
 	DoublyListNode<T>* first = last->rlink;
 	DoublyListNode<T>* p = first->rlink;
 
+    while(p != first){
+        if(p->llink->data.eno == eno){
+            return false;
+        } else {
+            p = p-> rlink;
+        }
+    }
+    return true;
+
 }
 template<class T>
 bool CircularDoublyList<T>::Delete(string eno) // delete the element
@@ -209,15 +248,50 @@ bool CircularDoublyList<T>::Delete(string eno) // delete the element
 	DoublyListNode<T>* first = last->rlink;
 	DoublyListNode<T>* p = first->rlink;
 
+    while(p != first){
+        if(p->llink->data.eno == eno){
+
+            p->rlink->llink = p->llink;
+            p->llink->rlink = p->rlink;
+
+            RetNode(p);
+            return true;
+        } else {
+            p = p->rlink;
+        }
+    }
+    return false;
+
 }
 template<class T>
 void CircularDoublyList<T>::Erase() {
+    //전체 노드 삭제
 
+    DoublyListNode<T>* first = last->rlink;
+    DoublyListNode<T>* p = first->rlink;
+
+    while(p != first){
+        RetNode(p->llink);
+        p = p->rlink;
+    }
+    last = new DoublyListNode<T>();
 }
 
 template<class T>
 ostream& operator<<(ostream& os, CircularDoublyList<T>& l)
 {
+    CircularDoublyListIterator<T> li(l);
+
+    os<<"[ ";
+    while(li.NotNull()){
+        os<<li.GetCurrent();
+        if(li.NextNotNull()){
+            os<<", ";
+        }
+        li.Next();
+    }
+    os<<" ]";
+    return os;
 
 }
 template<class T>
@@ -227,27 +301,48 @@ CircularDoublyList<T>& CircularDoublyList<T>::operator+(CircularDoublyList<T>& l
 	CircularDoublyList<T> lc;
 	p = Aiter.First(); q = Biter.First();
 
+    while(Aiter.NotNull()){
+        lc.Add(p);
+        p = Aiter.Next();
+    }
+    while(Biter.NotNull()){
+        lc.Add(q);
+        q = Biter.Next();
+    }
+
+    return lc;
 }
 
 template<class T>
 bool CircularDoublyListIterator<T>::NotNull() {
-
+    if(current != list.last->rlink){
+        return true;
+    } else {
+        return false;
+    }
 }
 template<class T>
 bool CircularDoublyListIterator<T>::NextNotNull() {
-
+    if(current->rlink != list.last->rlink){
+        return true;
+    } else {
+        return false;
+    }
 }
 template<class T>
 T* CircularDoublyListIterator<T>::First() {
+    //Employee타입의 포인터를 반환해야한다.
+    return &list.last->rlink->data;
 
 }
 template<class T>
 T* CircularDoublyListIterator<T>::Next() {
-
+    current = current->rlink;
+    return &current->data;
 }
 template<class T>
 T* CircularDoublyListIterator<T>::GetCurrent() {
-
+    return &current->data;
 }
 template<class T>
 CircularDoublyListIterator<T>::~CircularDoublyListIterator() {
@@ -258,22 +353,63 @@ CircularDoublyListIterator<T>::~CircularDoublyListIterator() {
 template<class T>
 int sum(const CircularDoublyList<T>& l)
 {
+    CircularDoublyListIterator<T> li(l);
 
+    int ans = 0;
+
+    while(li.NotNull()){
+        ans += li.GetCurrent()->getSalary();
+        li.Next();
+    }
+    return ans;
 }
 template<class T>
 double avg(const CircularDoublyList<T>& l)
 {
+    CircularDoublyListIterator<T> li(l);
 
+    int ans = 0;
+    int counter = 0;
+
+    while(li.NotNull()){
+        counter +=1;
+        ans += li.GetCurrent()->getSalary();
+        li.Next();
+    }
+
+    return ((double)ans)/counter;
 }
 template<class T>
 int min(const CircularDoublyList<T>& l)
 {
+    CircularDoublyListIterator<T> li(l);
 
+    int minPrice = li.First()->getSalary();
+
+    while(li.NotNull()){
+        if(minPrice > li.GetCurrent()->getSalary()){
+            minPrice = li.GetCurrent()->getSalary();
+        }
+        li.Next();
+    }
+
+    return minPrice;
 }
 template<class T>
 int max(const CircularDoublyList<T>& l)
 {
+    CircularDoublyListIterator<T> li(l);
 
+    int maxPrice = li.First()->getSalary();
+
+    while(li.NotNull()){
+        if(maxPrice < li.GetCurrent()->getSalary()){
+            maxPrice = li.GetCurrent()->getSalary();
+        }
+        li.Next();
+    }
+
+    return maxPrice;
 }
 
 enum Enum {
