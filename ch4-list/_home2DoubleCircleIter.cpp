@@ -240,14 +240,19 @@ bool CircularDoublyList<T>::Search(string eno) { // sno를 갖는 레코드를 �
 	DoublyListNode<T>* first = last->rlink;
 	DoublyListNode<T>* p = first->rlink;
 
-    while(p != first){
-        if(p->llink->data.eno == eno){
-            return false;
-        } else {
-            p = p-> rlink;
+    if(first->data.eno == eno){
+        return true;
+    } else{
+        while(p != first){
+            if(p->data.eno == eno){
+                return true;
+            } else {
+                p = p->rlink;
+            }
         }
     }
-    return true;
+
+    return false;
 
 }
 template<class T>
