@@ -145,7 +145,7 @@ void Chain<T>::Add(const T& element) //add a new node after first
         newNode->link = first;
         first = newNode;
     } else if(newNode->data.exp == first->data.exp){ //first와 newNode 의 exp가 동일한경우
-        first->data.coef += newNode->data.exp;
+        first->data.coef += newNode->data.coef;
         return;
     } else {
        while(p->link != nullptr){//p의 다음 링크가 null이 아닐때까지 돈다.
@@ -239,17 +239,26 @@ ChainIterator<T> ChainIterator<T>::operator ++(int) //post increment
 
 template <class T>
 bool ChainIterator<T>::NotNull() { //check the current element in list is non-null
-
+    if(current != nullptr){
+        return true;
+    } else {
+        return false;
+    }
 }
 
 template <class T>
 bool ChainIterator<T>::NextNotNull() { //check the next element in list is non-null
-
+    if(current->link != nullptr){
+        return true;
+    } else {
+        return true;
+    }
 }
 
 template <class T>
 T* ChainIterator<T>::Next() {//return a pointer to the next element of list
-
+    current = current->link;
+    return &current->data;
 }
 
 template<class T>
@@ -279,7 +288,19 @@ Polynomial<T> Polynomial<T>::operator+(const Polynomial<T>& b) const {
 	ChainIterator<Term<T>> ai = poly.begin(), bi = b.poly.begin();
 	Polynomial<T> c;
 
+    //단순하게 a와 b 전부 순환하면서 더하는 작업을 진행하도록 한다.?
+    //c.addAll(b);//TODO : 이게 왜 안되는 것일까?
 
+
+    while(ai.NotNull()){
+        c.add(ai->coef,ai->exp);
+        ai.Next();
+    }
+    while(bi.NotNull()){
+        c.add(bi->coef,bi->exp);
+        bi.Next();
+    }
+    return c;
 }
 
 
@@ -326,8 +347,11 @@ int main(void) {
 		case 'p': //a+b
 			cout << "a+b: ";
 			//a.addAll(&b);
-			a.display();
+			cout << " a : ";
+            a.display();
+            cout << " b : ";
 			b.display();
+            cout << "결과 : ";
 			sum = a + b;
 			sum.display();
 			//cout << sum;
