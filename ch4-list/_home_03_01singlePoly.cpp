@@ -1,14 +1,9 @@
 //
-// Created by leeyoungjun on 2023/11/08.
+// Created by leeyoungjun on 2023/11/10.
 //
 
-/*다항식 리스트: Polynomial Linked List
-//지수는 정수 0<= 지수 <= 5, 난수로 생성한다
-//계수는 double로 난수 생성한다.  -9.0 < 계수 < 9.0
-- 지수 내림 차순으로 정렬한다.
-- c = a.Add(b) 구현한다.
-- singly linked list, circular linked list, circular linked list with head node
-*/
+//싱글 링크드 리스트 버전.
+
 #include <iostream>
 #include<string>
 #include <assert.h>
@@ -58,7 +53,7 @@ private:
 
 template<class T> class ChainIterator {
 private:
-	//const Chain<T>* list; //refers to an existing list
+
 	ChainNode<T>* current; //points to a node in list
 public:
 	//ChainIterator<T>(const Chain<T> &l) :Chain(l), current(l.first) { };
@@ -94,7 +89,7 @@ public:
 	void add(T coef, T exponent);
 	void addAll(Polynomial<T>* poly);
 	void display();
-
+    /*
 	T Evaluate(T&) const;//f(x)에 대하여 x에 대한 값을 구한다
 	Polynomial<T> Multiply(Polynomial<T>&); //f(x) * g(x)
 	Polynomial(const Polynomial& p); //copy constructor
@@ -104,6 +99,7 @@ public:
 	~Polynomial( );
 	Polynomial operator-(const Polynomial&)const;
 
+    */
 private:
 	Chain<Term<T> > poly;
 };
@@ -123,13 +119,51 @@ ChainNode<T>::ChainNode(const T& element) {//ChainNode 생성자?
 template <class T>
 void Chain<T>::Delete(void) //delete the first element after first
 {
-
+    //처음의 다음 항을 지운다?
+    first->link = first->link->link;
 }
 
 template <class T>
 void Chain<T>::Add(const T& element) //add a new node after first
 {
+    ChainNode<T>* newNode =new ChainNode<T>(element);
 
+    //first가 NULL인 경우
+    if(first == nullptr){
+        first = newNode;
+        return;
+    }
+
+    ChainNode<T>* p = first->link;
+    ChainNode<T>* q = first; //마지막 while 탈출 이후를 위해서
+    //TODO : while 내부 조건 변경해서 q 사용하지 않고 작동할 수 있도록?
+
+    //지수를 비교해서 지수순으로 정렬한다.
+
+    //만약 first보다 newNode의 지수가 큰 경우
+    if(newNode->data.exp>first->data.exp){
+        newNode->link = first;
+        first = newNode;
+    } else {
+       while(p != nullptr){//포인터가 null이 아닐때까지 돈다.
+           if(p->data.exp>=newNode->data.exp && newNode->data.exp > p->link->data.exp){
+               // 이전 노드의 exp >= newNode > 다음 노드의 exp
+               // 제일 마지막 노드보다 작은 경우, while문을 탈출하고 삽입하게 된다.
+               // if문 조건이 성립하는 경우에는
+
+               p->link = newNode;
+               newNode->link = p->link;
+               return;
+           } else {
+               q = p;
+               p = p->link;
+
+           }
+       }
+       //newNode가 제일 작은 경우
+       q->link = newNode;
+       //newNode->link는 nullptr이므로 변경할 필요가 없다.
+    }
 }
 
 template <class T>
@@ -170,7 +204,16 @@ void Chain<T>::InsertBack(const T& element) {
 
 template <class T>
 void Chain<T>::displayAll() {
-
+    ChainNode<T>* p = first;
+    cout<<"[ ";
+    while(p != nullptr){
+        cout<<p->data;
+        if(p->link != nullptr){
+            cout<<", ";
+        }
+        p = p->link;
+    }
+    cout<<" ]";
 }
 
 template <class T>
@@ -240,7 +283,15 @@ int main(void) {
 	ChainNode<Term<int>> cn;
 	Chain<Term<int>> ca, cb;
 	ChainIterator<Term<int>> iter;
-	int c, e;
+	int c;
+    int e;
+
+    //난수생성부분
+    //지수는 정수 0<= 지수 <= 5, 난수로 생성한다
+    //계수는 double로 난수 생성한다.  -9.0 < 계수 < 9.0
+    srand(0);
+
+
 
 	cout << endl << "명령 선택: a: Add_a, b: Add_b, p: a + b, d: DisplayAll, q: exit" << endl;
 	cin >> select;
@@ -249,19 +300,17 @@ int main(void) {
 		switch (select)
 		{
 		case 'a':
-			cout << "리스트 a의 항 입력 : " << endl;
-			cout << "정수 coef: ";
-			cin >> c;
-			cout << "정수(내림차순) exp: ";
-			cin >> e;
+			cout<<"자동으로 난수를 생성해서 입력합니다"<<endl;
+            //c = (rand()/static_cast<double>(RAND_MAX)*2-1)*9; //-9~9까지 double형 변수 생성
+            c = rand()%19-9;
+            e = rand()%6; // 0~5 사이의 난수 생성
 			a.add(c, e);//지수를 임의 숫자로 입력하여도 지수 내림 차순으로 정렬
 			break;
 		case 'b':
-			cout << "리스트 b의 항 입력: " << endl;
-			cout << "정수 coef: ";
-			cin >> c;
-			cout << "정수(내림차순) exp: ";
-			cin >> e;
+			cout<<"자동으로 난수를 생성해서 입력합니다"<<endl;
+            //c = (rand()/static_cast<double>(RAND_MAX)*2-1)*9; //-9~9까지 double형 변수 생성
+            c = rand()%19-9;
+            e = rand()%6; // 0~5 사이의 난수 생성
 			b.add(c, e);
 			break;
 		case 'p': //a+b
