@@ -125,7 +125,9 @@ void Chain<T>::Delete(void) //delete the first element after first
 
 template <class T>
 void Chain<T>::Add(const T& element) //add a new node after first
-{
+{   //TODO : 지수가 같은 경우 서로 계수를 더해줄 수 있어야한다.
+    //TODO : 가끔 무한루프로 링크가 연결되는 경우가 있다.
+
     ChainNode<T>* newNode =new ChainNode<T>(element);
 
     //first가 NULL인 경우
@@ -134,9 +136,7 @@ void Chain<T>::Add(const T& element) //add a new node after first
         return;
     }
 
-    ChainNode<T>* p = first->link;
-    ChainNode<T>* q = first; //마지막 while 탈출 이후를 위해서
-    //TODO : while 내부 조건 변경해서 q 사용하지 않고 작동할 수 있도록?
+    ChainNode<T>* p = first;
 
     //지수를 비교해서 지수순으로 정렬한다.
 
@@ -144,24 +144,32 @@ void Chain<T>::Add(const T& element) //add a new node after first
     if(newNode->data.exp>first->data.exp){
         newNode->link = first;
         first = newNode;
+    } else if(newNode->data.exp == first->data.exp){ //first와 newNode 의 exp가 동일한경우
+        first->data.coef += newNode->data.exp;
+        return;
     } else {
-       while(p != nullptr){//포인터가 null이 아닐때까지 돈다.
-           if(p->data.exp>=newNode->data.exp && newNode->data.exp > p->link->data.exp){
-               // 이전 노드의 exp >= newNode > 다음 노드의 exp
+       while(p->link != nullptr){//p의 다음 링크가 null이 아닐때까지 돈다.
+           if(p->data.exp>newNode->data.exp && newNode->data.exp > p->link->data.exp){
+               // 이전 노드의 p > newNode > p->link
                // 제일 마지막 노드보다 작은 경우, while문을 탈출하고 삽입하게 된다.
                // if문 조건이 성립하는 경우에는
 
-               p->link = newNode;
                newNode->link = p->link;
+               p->link = newNode;
                return;
+           } else if(p->link->data.exp == newNode->data.exp){
+               // p->link == newNode
+               // 제일 마지막 exp와 같은 경우를 처리해주기위해
+               p->link->data.coef += newNode->data.coef;
+               return;
+
            } else {
-               q = p;
                p = p->link;
 
            }
        }
        //newNode가 제일 작은 경우
-       q->link = newNode;
+       p->link = newNode;
        //newNode->link는 nullptr이므로 변경할 필요가 없다.
     }
 }
@@ -204,6 +212,7 @@ void Chain<T>::InsertBack(const T& element) {
 
 template <class T>
 void Chain<T>::displayAll() {
+
     ChainNode<T>* p = first;
     cout<<"[ ";
     while(p != nullptr){
@@ -304,6 +313,7 @@ int main(void) {
             //c = (rand()/static_cast<double>(RAND_MAX)*2-1)*9; //-9~9까지 double형 변수 생성
             c = rand()%19-9;
             e = rand()%6; // 0~5 사이의 난수 생성
+            cout<<"c, e : [ "<<c<<", "<<e<<" ]"<<endl;
 			a.add(c, e);//지수를 임의 숫자로 입력하여도 지수 내림 차순으로 정렬
 			break;
 		case 'b':
