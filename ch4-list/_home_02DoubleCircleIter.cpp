@@ -148,6 +148,8 @@ DoublyListNode<T>* CircularDoublyList<T>::GetNode()
     } else {
         DoublyListNode<T> * getN = av;
         av = av->rlink;
+        getN->llink = nullptr;
+        getN->rlink = nullptr;
 
         return getN;
     }
@@ -156,10 +158,18 @@ DoublyListNode<T>* CircularDoublyList<T>::GetNode()
 template<class T>
 void CircularDoublyList<T>::RetNode(DoublyListNode<T>* x)
 { //free the node pointed to by x
-    av->llink = x;
-    x->rlink = av;
-    x->llink = nullptr;
-    av = x;
+
+    if(av == nullptr){
+        av = x;
+        av->llink = av;
+        av->rlink = av;
+    } else {
+        av->llink = x;
+        x->rlink = av;
+        x->llink = nullptr;
+        av = x;
+    }
+
 
 
     //현재 av에서 왼쪽에 x를 연결해주고
@@ -261,26 +271,40 @@ bool CircularDoublyList<T>::Delete(string eno) // delete the element
 	DoublyListNode<T>* first = last->rlink;
 	DoublyListNode<T>* p = first->rlink;
 
-    if(first->data.eno == eno){ //처음에 삭제 대상이 있는 경우
-        last->rlink = first->rlink;
-        first->rlink->llink = last;
+    //내부가 빈 경우 -> 생각안해도됨.
 
-        RetNode(first);
+    //리스트 내부가 1개이면서 삭제대상인경우
+    if(first == last && first->data.eno == eno){
+        RetNode(last);
+        last = GetNode();
         return true;
     } else {
+
         while(p != first){
             if(p->data.eno == eno){
+                if(p == last){ //마지막이 삭제 대상인경우 last를 앞으로
+                    last = p->llink;
+                }
                 p->llink->rlink = p->rlink;
                 p->rlink->llink = p->llink;
-
                 RetNode(p);
                 return true;
+
             } else {
                 p = p->rlink;
             }
         }
+
+        //p가 first이면서 eno가 일치하는 삭제 대상인경우
+        if(first->data.eno == eno){
+            last->rlink = first->rlink;
+            first->rlink->llink = last;
+
+            RetNode(first);
+            return true;
+        }
+        return false;
     }
-    return false;
 
 }
 template<class T>
