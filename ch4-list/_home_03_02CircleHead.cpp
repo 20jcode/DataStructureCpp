@@ -41,7 +41,7 @@ private:
 
 template<class T> class Chain {
 public:
-	Chain() { last = 0; };
+	Chain() { last = head = new ChainNode<T>; };
 	void Delete(void); //delete the first element after first
 	int Length();
 	void Add(const T& element); //add a new node after first
@@ -51,7 +51,7 @@ public:
 	void displayAll();
 
 	ChainIterator<T> begin() const { return ChainIterator<T>(head->link); }
-	ChainIterator<T> end() const { return ChainIterator<T>(nullptr); }
+	ChainIterator<T> end() const { return ChainIterator<T>(last); }
 private:
 	ChainNode<T>* last; //last로 수정
     ChainNode<T>* head; //head노드 추가
@@ -260,7 +260,7 @@ ChainIterator<T> ChainIterator<T>::operator ++(int) //post increment
 
 template <class T>
 bool ChainIterator<T>::NotNull() { //check the current element in list is non-null
-    if(current != nullptr){ //data가 0이 아닌경우 null이 아니므로.
+    if(current != list->end().current){ //data가 0이 아닌경우 null이 아니므로.
         return true;
     } else {
         return false;
@@ -270,7 +270,7 @@ bool ChainIterator<T>::NotNull() { //check the current element in list is non-nu
 template <class T>
 bool ChainIterator<T>::NextNotNull() { //check the next element in list is non-null
 
-    if(current != nullptr){
+    if(current != list->end().current){
         return true;
     } else {
         return false;
@@ -428,11 +428,14 @@ int main(void) {
 
 			break;
 		case 'p': //a+b
-			cout << "a+b: ";
+
 			//a.addAll(&b);
+            cout << " a : "<<endl;
 			a.display();
+            cout << " b : "<<endl;
 			b.display();
 			sum = a + b;
+            cout << " sum : "<<endl;
 			sum.display();
 			//cout << sum;
 			break;
