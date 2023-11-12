@@ -21,7 +21,7 @@ add_executable(ch4-5-avList ch4-list/_05AvailableList.cpp)
 add_executable(ch4-h1-avHomework ch4-list/_home_01workAv.cpp)
 add_executable(ch4-4-CircleIter ch4-list/_04CircleIter.cpp)
 add_executable(ch4-h2-DoubleCircle ch4-list/_home_02DoubleCircleIter.cpp)
-add_executable(mid mid.cpp)
+
 add_executable(ch4-h3-PolyList ch4-list/_home_03PolyList.cpp)
 add_executable(ch4-h3-1Single ch4-list/_home_03_01singlePoly.cpp)
 add_executable(ch4-h3-2CircleHead ch4-list/_home_03_02CircleHead.cpp)
