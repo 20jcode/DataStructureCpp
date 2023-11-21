@@ -17,8 +17,11 @@
 #define MAX_VALUE 65536
 using namespace std;
 
-
+template <class T>
 class ThreadedTree;
+template <class T>
+class ThreadedInorderIterator;
+
 class Employee {
 	string eno;
 	string ename;
@@ -28,72 +31,152 @@ public:
 	Employee(string sno, string sname) :eno(sno), ename(sname) {}
 	friend ostream& operator<<(ostream& os, Employee&);
 	bool operator<(Employee&);
+    bool operator>(Employee&);
 	bool operator==(Employee&);
 };
+
 class Student {
 	string snum;
 	string sname;
 	int age;
 public:
 	Student() {}
+    Student(string num,string name) :snum(num), sname(name) {}
+    friend ostream& operator<<(ostream& os, Student&);
+    bool operator<(Student&);
+    bool operator>(Student&);
+	bool operator==(Student&);
 };
+
+//대소비교 오퍼레이터 Employee 객체
+
+ostream& operator<<(ostream& os, Employee& em){
+    os<<"[ eno : "<<em.eno<<", ename : "<<em.ename<<", salary : "<<em.salary<<" ]";
+    return os;
+}
+bool Employee::operator<(Employee& em){
+    if(stoi(eno) < stoi(em.eno)){
+        return true;
+    } else {
+        return false;
+    }
+}
+bool Employee::operator>(Employee& em){
+    if(stoi(eno) > stoi(em.eno)){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool Employee::operator==(Employee & em) {
+    if(stoi(eno) != stoi(em.eno)){
+        return false;
+    }
+    if (stoi(ename) != stoi(em.ename)){
+        return false;
+    }
+    if (salary != em.salary){
+        return false;
+    }
+    return true;
+}
+
+//대소 비교 오퍼레이터 Student 객체
+
+ostream& operator<<(ostream& os, Student& st){
+    os<<"[ snum : "<<st.snum<<", sname : "<<st.sname<<", age : "<<st.age<<" ]";
+    return os;
+}
+bool Student::operator<(Student& st){
+    if(stoi(snum) < stoi(st.snum)){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool Student::operator>(Student& st){
+    if(stoi(snum) > stoi(st.snum)){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool Student::operator==(Student & st) {
+    if(stoi(snum) != stoi(st.snum)){
+        return false;
+    }
+    if (sname != st.sname){
+        return false;
+    }
+    if (age != st.age){
+        return false;
+    }
+    return true;
+}
+
+
 template <class T>
 class ThreadedNode {
-	friend class ThreadedTree;
-	friend class ThreadedInorderIterator;
+	friend class ThreadedTree<T>;
+	friend class ThreadedInorderIterator<T>;
 private:
 	bool LeftThread;
-	ThreadedNode* LeftChild;
+	ThreadedNode<T>* LeftChild;
 	T data;
-	ThreadedNode* RightChild;
+	ThreadedNode<T>* RightChild;
 	bool RightThread;
 public:
 	ThreadedNode() { LeftChild = RightChild = 0; };
-	ThreadedNode(char ch) { data = ch; };
-	ThreadedNode(char ch, ThreadedNode* lefty, ThreadedNode* righty,
+	ThreadedNode(T ch) { data = ch; };
+	ThreadedNode(T ch, ThreadedNode<T>* lefty, ThreadedNode<T>* righty,
 		bool lthread, bool rthread)
 	{
 		data = ch; LeftChild = lefty; RightChild = righty;
 		LeftThread = lthread;  RightThread = rthread;
 	};
 };
+
 template <class T>
 class ThreadedTree {
-	friend class ThreadedInorderIterator;
+	friend class ThreadedInorderIterator<T>;
 private:
-	ThreadedNode* root;
-	void Inorder(ThreadedNode*, bool);
+	ThreadedNode<T>* root;
+	void Inorder(ThreadedNode<T>*, bool);
 public:
 	/* Constructor */
 	ThreadedTree() {
-		root = new ThreadedNode;
+		root = new ThreadedNode<T>;
 		root->RightChild = root->LeftChild = root;
-		root->data = 'z';
+		root->data; //TODO?
 		root->LeftThread = true; root->RightThread = false;
 	};
-	void InsertRight(ThreadedNode*, char);
-	bool Insert(char data);
-	void Delete(char data);
+	void InsertRight(ThreadedNode<T>*, T);
+	bool Insert(T data);
+	void Delete(T data);
 	void Inorder();
 	void PrintTree();
-	bool Search(char data);
-	ThreadedNode* InorderSucc(ThreadedNode*);
+	bool Search(T data);
+	ThreadedNode<T>* InorderSucc(ThreadedNode<T>*);
 };
 
+template<class T>
+ThreadedNode<T>* ThreadedTree<T>::InorderSucc(ThreadedNode<T>* current)
+{   //current에서 리프노드의 제일 왼쪽 노드를 반환한다.
 
-ThreadedNode* ThreadedTree::InorderSucc(ThreadedNode* current)
-{
-	ThreadedNode* temp = current->RightChild;
-	if (!current->RightThread)
-		while (!temp->LeftThread) temp = temp->LeftChild;
-	return temp;
+	ThreadedNode<T>* temp = current->RightChild; //넣은 노드의 오른쪽 자식 포인터를 복사함.
+	if (!current->RightThread) //오른쪽이 실제 노드일때
+		while (!temp->LeftThread) temp = temp->LeftChild;//오른쪽 자식의 왼쪽 값이 실제 노드일때, 오른쪽 자식 포인터를 왼쪽 자식으로 이동시킴
+	return temp; //포인터를 반환.
 }
 
-
-void ThreadedTree::InsertRight(ThreadedNode* s, char ch)
+template <class T>
+void ThreadedTree<T>::InsertRight(ThreadedNode<T>* s, T ch)
 // Create node r; store ch in r; insert r as the right child of s
 {
-	ThreadedNode* r = new ThreadedNode(ch);
+	ThreadedNode<T>* r = new ThreadedNode(ch);
 	r->RightChild = s->RightChild;
 	r->RightThread = s->RightThread;
 	r->LeftChild = s;
@@ -101,18 +184,19 @@ void ThreadedTree::InsertRight(ThreadedNode* s, char ch)
 	s->RightChild = r; // attach r to s
 	s->RightThread = false;
 	if (!r->RightThread) {
-		ThreadedNode* temp = InorderSucc(r); // returns the inorder successor of r
+		ThreadedNode<T>* temp = InorderSucc(r); // returns the inorder successor of r
 		temp->LeftChild = r;
 	}
 }
 
 /* Function to delete an element */
-void ThreadedTree::Delete(char data)
+template <class T>
+void ThreadedTree<T>::Delete(T ch)
 {
-	ThreadedNode* dest = root->LeftChild, * p = root;
+	ThreadedNode<T>* dest = root->LeftChild, * p = root;
 	for (;;)
 	{
-		if (dest->data < data)
+		if (dest->data < ch)
 		{
 			/* not found */
 			if (dest->RightThread)
@@ -120,7 +204,7 @@ void ThreadedTree::Delete(char data)
 			p = dest;
 			dest = dest->RightChild;
 		}
-		else if (dest->data > data)
+		else if (dest->data > ch)
 		{
 			/* not found */
 			if (dest->LeftThread)
@@ -134,7 +218,7 @@ void ThreadedTree::Delete(char data)
 			break;
 		}
 	}
-	ThreadedNode* target = dest;
+	ThreadedNode<T>* target = dest;
 	if (!dest->RightThread && !dest->LeftThread)
 	{
 		/* dest has two children*/
@@ -149,7 +233,7 @@ void ThreadedTree::Delete(char data)
 		/* using replace mode*/
 		dest->data = target->data;
 	}
-	if (p->data >= target->data)
+	if (p->data > target->data && p->data == target->data)
 	{
 		if (target->RightThread && target->LeftThread)
 		{
@@ -158,7 +242,7 @@ void ThreadedTree::Delete(char data)
 		}
 		else if (target->RightThread)
 		{
-			ThreadedNode* largest = target->LeftChild;
+			ThreadedNode<T>* largest = target->LeftChild;
 			while (!largest->RightThread)
 			{
 				largest = largest->RightChild;
@@ -168,7 +252,7 @@ void ThreadedTree::Delete(char data)
 		}
 		else
 		{
-			ThreadedNode* smallest = target->RightChild;
+			ThreadedNode<T>* smallest = target->RightChild;
 			while (!smallest->LeftThread)
 			{
 				smallest = smallest->LeftChild;
@@ -186,7 +270,7 @@ void ThreadedTree::Delete(char data)
 		}
 		else if (target->RightThread)
 		{
-			ThreadedNode* largest = target->LeftChild;
+			ThreadedNode<T>* largest = target->LeftChild;
 			while (!largest->RightThread)
 			{
 				largest = largest->RightChild;
@@ -196,7 +280,7 @@ void ThreadedTree::Delete(char data)
 		}
 		else
 		{
-			ThreadedNode* smallest = target->RightChild;
+			ThreadedNode<T>* smallest = target->RightChild;
 			while (!smallest->LeftThread)
 			{
 				smallest = smallest->LeftChild;
@@ -205,12 +289,15 @@ void ThreadedTree::Delete(char data)
 			p->RightChild = target->RightChild;
 		}
 	}
-}void ThreadedTree::Inorder()
+}
+template <class T>
+void ThreadedTree<T>::Inorder()
 {
 	Inorder(root, root->LeftThread);
 }
 
-void ThreadedTree::Inorder(ThreadedNode* CurrentNode, bool b)
+template <class T>
+void ThreadedTree<T>::Inorder(ThreadedNode<T>* CurrentNode, bool b)
 {
 	if (!b) {
 		Inorder(CurrentNode->LeftChild, CurrentNode->LeftThread);
@@ -220,11 +307,11 @@ void ThreadedTree::Inorder(ThreadedNode* CurrentNode, bool b)
 	}
 }
 
-
-bool ThreadedTree::Insert(char d)//leaf node에만 insert, 중간 노드에 insert 아님
+template <class T>
+bool ThreadedTree<T>::Insert(T d)//leaf node에만 insert, 중간 노드에 insert 아님
 {
-	ThreadedNode* p = root;
-	ThreadedNode* q = p;
+	ThreadedNode<T>* p = root;
+	ThreadedNode<T>* q = p;
 	bool temp = p->LeftThread;
 	while (!temp) {
 		q = p;
@@ -232,7 +319,7 @@ bool ThreadedTree::Insert(char d)//leaf node에만 insert, 중간 노드에 inse
 		if (d < p->data) { temp = p->LeftThread; p = p->LeftChild; }
 		else { temp = p->RightThread; p = p->RightChild; }
 	}
-	p = new ThreadedNode;
+	p = new ThreadedNode<T>;
 	p->data = d;
 	//	if (q->LeftChild == q){ q->LeftChild = p;q->LeftThread = false;}
 	//	else
@@ -253,9 +340,10 @@ bool ThreadedTree::Insert(char d)//leaf node에만 insert, 중간 노드에 inse
 
 
 /* Function to print tree */
-void ThreadedTree::PrintTree()
+template <class T>
+void ThreadedTree<T>::PrintTree()
 {
-	ThreadedNode* tmp = root, * p;
+	ThreadedNode<T>* tmp = root, * p;
 	for (;;)
 	{
 		p = tmp;
@@ -273,23 +361,50 @@ void ThreadedTree::PrintTree()
 	}
 	cout << endl;
 }
+
+template <class T>
+bool ThreadedTree<T>::Search(T data) {
+    ThreadedNode<T>* tmp = root, * p;
+	for (;;)
+	{
+		p = tmp;
+		tmp = tmp->RightChild;
+		if (!p->RightThread)
+		{
+			while (!tmp->LeftThread)
+			{
+				tmp = tmp->LeftChild;
+			}
+		}
+
+		if (tmp == root)
+			break;
+		if (tmp->data == data){
+            return true;
+        }
+	}
+
+    return false;
+}
+
 template <class T>
 class ThreadedInorderIterator {
 public:
 	void Inorder();
 	T* Next();
-	ThreadedInorderIterator(ThreadedTree tree) : t(tree) {
+	ThreadedInorderIterator(ThreadedTree<T> tree) : t(tree) {
 		CurrentNode = t.root;
 	};
 private:
-	ThreadedTree t;
-	ThreadedNode* CurrentNode;
+	ThreadedTree<T> t;
+	ThreadedNode<T>* CurrentNode;
 };
 
-T* ThreadedInorderIterator::Next()
+template <class T>
+T* ThreadedInorderIterator<T>::Next()
 // Find the inorder successor of CurrentNode in a threaded binary tree
 {
-	ThreadedNode* temp = CurrentNode->RightChild;
+	ThreadedNode<T>* temp = CurrentNode->RightChild;
 	if (!CurrentNode->RightThread)
 		while (!temp->LeftThread) temp = temp->LeftChild;
 	CurrentNode = temp;
@@ -297,9 +412,10 @@ T* ThreadedInorderIterator::Next()
 	else return &CurrentNode->data;
 }
 
-void ThreadedInorderIterator::Inorder()
+template <class T>
+void ThreadedInorderIterator<T>::Inorder()
 {
-	for (char* ch = Next(); ch; ch = Next())
+	for (T* ch = Next(); ch; ch = Next())
 		cout << *ch << endl;
 }
 
@@ -314,6 +430,7 @@ int main() {
 	int select;
 
 	Employee* data;
+    Student* datas;
 	cout << "\nThreadedTree Operations\n";
 
 	while (select != 7)
@@ -330,7 +447,11 @@ int main() {
 		{
 		case Insert:
 			//객체 배열 초기화하여 입력
-			te.insert(*data);
+            for(int i =0; i<10; i++){
+                data = new Employee(to_string(i),"name : "+to_string(i));
+                te.Insert(*data);
+            }
+
 			break;
 		case Remove:
 			cout << "삭제 사원번호 입력:: ";
@@ -341,7 +462,6 @@ int main() {
 			/*
 			data = new Employee(eno, nullptr);//오류가 나는 이유는 nullptr은 포인터 타입인데 string으로 변환할 수가 없기 때문임
 			*/
-			cout << te.Delete(*data);
 			cout << endl;
 			break;
 
@@ -359,7 +479,7 @@ int main() {
 			cout << "삽입 사원 이름 입력:: ";
 			cin >> ename;
 			data = new Employee(eno, ename);
-			if (te.search(*data))//입력된 x에 대한 tree 노드를 찾아 삭제한다.
+			if (te.Search(*data))//입력된 x에 대한 tree 노드를 찾아 삭제한다.
 				cout << eno << " 값이 존재한다" << endl;
 			else
 				cout << "값이 없다" << endl;
@@ -374,10 +494,16 @@ int main() {
 			break;
 		case InsertStudent:
 			//객체 배열 초기화하여 입력
-			t.insert(*data);
+
+            for(int i =0; i<10; i++){
+                datas = new Student(to_string(i),"name : "+to_string(i));
+                te.Insert(*data);
+            }
+			ts.Insert(*datas);
 			break;
 		case InorderStudent:
 			//출력
+            ts.PrintTree();
 			break;
 		default:
 			cout << "WRONG INPUT  " << endl;
