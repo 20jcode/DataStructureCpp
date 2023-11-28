@@ -28,7 +28,7 @@ class TreeNode {
 private:
 	TreeNode* LeftChild;
 	int data;
-	int leftSize;
+	int leftSize;//rank를 위해 왼쪽 노드의 갯수
     int height; // 추가됨.
 	TreeNode* RightChild;
 
@@ -98,12 +98,27 @@ int Tree::rank(TreeNode* current) {
     //각 노드의 leftsize를 갱신한다.
     //rank는 자신을 root로 하는 하위 트리의 높이를 저장하는 것이다.
     //노드를 합칠 경우 rank가 낮은 트리가 랭크가 높은 트리에게 붙게 된다.
+    if(current->LeftChild == nullptr){
+        current->leftSize = 0; //없으면 0으로 설정해줌
+    }
+    return current->leftSize+1; // 항상 +1값이 리턴되도록 한다.
 
 }
 int Tree::depth(TreeNode* p){ //TODO
     //root가 p를 가리킨다.
     int lnum = depth(p->LeftChild);
     int rnum = depth(p->RightChild);
+
+    //Leaf노드일때 높이는 0이된다.
+
+    if(p->LeftChild == nullptr){
+        p->height = 0;
+    }
+    if(p->RightChild == nullptr){
+        p->height = 0;
+    }
+    return p->height+1;
+
 }
 
 TreeNode* Tree::inorderSucc(TreeNode* current)
