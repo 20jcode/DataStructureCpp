@@ -11,11 +11,14 @@
 
 3. search(3)이면 inorder 출력에서 3번째 출력, n이면 n번째 출력하도록 수정한다.
 
-4. 각 노드에 Height(Tl) - Height(Tr)를 저장한다. LL 타입과 RR 타입에 대하여 split를 호출한다. 이후 join 함수를 사용하여 LL, RR 타입이 제거 됨을 height 값을 출력하여 확인한다. > 교재 소스코드 5.7를 활용한다.
+4. 각 노드에 Height(Tl) - Height(Tr)를 저장한다. LL 타입과 RR 타입에 대하여 split를 호출한다.
+ 이후 join 함수를 사용하여 LL, RR 타입이 제거 됨을 height 값을 출력하여 확인한다. > 교재 소스코드 5.7를 활용한다.
 
 5. LR, RL 타입을 제거하면 보너스 점수 준다: + 20% 가산점 추가한다.
  *
 */
+
+
 #include <iostream>
 #define MaxCapacity 20
 using namespace std;
@@ -26,6 +29,7 @@ private:
 	TreeNode* LeftChild;
 	int data;
 	int leftSize;
+    int height; // 추가됨.
 	TreeNode* RightChild;
 
 public:
@@ -52,11 +56,11 @@ public:
 	Tree() {
 		root = NULL;
 	}
-	Tree::Tree(const Tree& s)//copy constructor
+	Tree(const Tree& s)//copy constructor
 	{
 		root = copy(s.root);
 	}
-	TreeNode* inorderSucc(TreeNode* current);
+	TreeNode* inorderSucc(TreeNode* current);//현재노드를 넣음
 	bool isLeafNode(TreeNode* current);
 	void inorder() {
 		inorder(root);
@@ -72,6 +76,7 @@ public:
 	void rank() {
 		rank(root);
 	}
+    void depth(){depth(root);} // TODO : 과제로 추가됨
 	int search(int rank);//nth 작은 값을 찾는다
 	// Driver
 	int operator==(const Tree& t)
@@ -86,12 +91,25 @@ private:
 	TreeNode* copy(TreeNode* orignode);
 	int equal(TreeNode* a, TreeNode* b);
 	int rank(TreeNode*);
+    int depth(TreeNode*); //TODO
 };
 int Tree::rank(TreeNode* current) {
+    //TODO
+    //각 노드의 leftsize를 갱신한다.
+    //rank는 자신을 root로 하는 하위 트리의 높이를 저장하는 것이다.
+    //노드를 합칠 경우 rank가 낮은 트리가 랭크가 높은 트리에게 붙게 된다.
 
 }
+int Tree::depth(TreeNode* p){ //TODO
+    //root가 p를 가리킨다.
+    int lnum = depth(p->LeftChild);
+    int rnum = depth(p->RightChild);
+}
+
 TreeNode* Tree::inorderSucc(TreeNode* current)
 {
+    //중위선회
+    //왼쪽 leaf노드로 이동한다음 중간에 root노드를 거치고 오른쪽 트리를 순회하는 구조.
 	TreeNode* temp = current->RightChild;
 	if (current->RightChild != NULL)
 		while (temp->LeftChild != NULL) temp = temp->LeftChild;
@@ -173,11 +191,11 @@ bool Tree::remove(int num) {
 
 }
 
-int Tree::search(int rank) {
+int Tree::search(int rank) { //rank에서 사용되는? 것.
 	TreeNode* p = root;
 
 }
-enum { Insert, Remove, Inorder, Preorder, Postorder, Search, Copy, Quit };
+enum { Insert, Remove, Inorder, Preorder, Postorder, Search, Copy, Height, SplitJoin,Quit };
 int main() {
 	srand(time(NULL));
 	Tree t;
@@ -237,6 +255,20 @@ int main() {
 			else
 				cout << "compare result: false" << endl;
 			break;
+
+        case Height:
+            t.depth();
+            t.inorder();
+            break;
+
+        case SplitJoin:
+            cin >> x;
+            split(x,A,B,y);
+            Tree tx = ThreeWayJoin(A,x,B);
+            tx.inorder(); //split과 책에 있는 코드 활용해서 만들기
+            break;
+
+            
 		case Quit:
 			cout << "Quit" << endl;
 			break;

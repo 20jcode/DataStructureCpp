@@ -26,5 +26,5 @@ add_executable(ch4-h3-PolyList ch4-list/_home_03PolyList.cpp)
 add_executable(ch4-h3-1Single ch4-list/_home_03_01singlePoly.cpp)
 add_executable(ch4-h3-2CircleHead ch4-list/_home_03_02CircleHead.cpp)
 
-add_executable(ch5-h1-trededTree ch5-tree/ch5-h1-treded.cpp)
+add_executable(ch5-h1-trededTree ch5-tree/ch5_h1_treded.cpp)
 add_executable(ch5-h2-rank ch5-tree/ch5-h2-rankTree.cpp)

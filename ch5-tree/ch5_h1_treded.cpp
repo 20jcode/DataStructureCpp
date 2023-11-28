@@ -12,6 +12,7 @@
 4. Employee 객체는 화면에서 입력하지 않고 10개의 객체를 배열로 초기화 for문으로 입력한다.
 5. main에서 InsertStudent, InorderStudent는 Student에 대하여 구현한다.
 */
+//root가 있고 root는 빈 노드, 그리고 오른쪽 자식이 진짜 시작 노드가 된다. TODO 확인하기
 #include <iostream>
 #include <cstdlib>
 #define MAX_VALUE 65536
@@ -55,6 +56,13 @@ ostream& operator<<(ostream& os, Employee& em){
     return os;
 }
 bool Employee::operator<(Employee& em){
+    //root라서 null인 경우에
+    if(eno.length()==0){
+        return true;
+    }
+    if(em.eno.length()==0){
+        return false;
+    }
     if(stoi(eno) < stoi(em.eno)){
         return true;
     } else {
@@ -346,13 +354,13 @@ void ThreadedTree<T>::PrintTree()
 	ThreadedNode<T>* tmp = root, * p;
 	for (;;)
 	{
-		p = tmp;
-		tmp = tmp->RightChild;
-		if (!p->RightThread)
+		p = tmp; //root에서 시작해서
+		tmp = tmp->RightChild;//root의 오른쪽 자식으로 이동
+		if (!p->RightThread)//오른쪽이 스레드가 아니라면(오른쪽 자식이 더 있다면)
 		{
-			while (!tmp->LeftThread)
+			while (!tmp->LeftThread) //왼쪽이 스레드가 나올때까지
 			{
-				tmp = tmp->LeftChild;
+				tmp = tmp->LeftChild; //왼쪽 자식으로 이동
 			}
 		}
 		if (tmp == root)
@@ -433,15 +441,16 @@ int main() {
     Student* datas;
 	cout << "\nThreadedTree Operations\n";
 
-	while (select != 7)
+	while (select != 11)
 	{
 		cout << "1. Insert list, 2. Remove, 3.Inorder, 4.IteratorInorder, 5.Search, 6.PrintTree, 7.Sum, 8. InsertStudent, 9.InorderStudent, 10.Quit" << endl;
 		// postorder traversal
 		// preorder traversal
 		cout << "Enter Your Choice: ";
 		cin >> select;
+        select -=1;
 		int rnd = 0;
-		cin >> select;
+		//cin >> select;
 		string eno, ename;
 		switch (static_cast<Enum>(select))
 		{
