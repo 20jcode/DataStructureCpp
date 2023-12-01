@@ -1,4 +1,4 @@
-+//
+//
 // Created by leeyoungjun on 2023/11/21.
 //
 /*
@@ -34,7 +34,7 @@ private:
 
 public:
 	TreeNode() {
-		LeftChild = RightChild = NULL; leftSize = 0;
+		LeftChild = RightChild = NULL; leftSize = 0; height=0;
 	}
 	bool equals(TreeNode& x) {
 		if (this->data == x.data)
@@ -94,14 +94,16 @@ private:
     int depth(TreeNode*); //TODO
 };
 int Tree::rank(TreeNode* current) {
-    //TODO
+
     //각 노드의 leftsize를 갱신한다.
     //rank는 자신을 root로 하는 하위 트리의 높이를 저장하는 것이다.
     //노드를 합칠 경우 rank가 낮은 트리가 랭크가 높은 트리에게 붙게 된다.
     if(current->LeftChild == nullptr){
         current->leftSize = 0; //없으면 0으로 설정해줌
+    } else {
+        current->leftSize +=1;
     }
-    return current->leftSize+1; // 항상 +1값이 리턴되도록 한다.
+    return current->leftSize; // 항상 +1값이 리턴되도록 한다.
 
 }
 int Tree::depth(TreeNode* p){ //TODO
@@ -198,9 +200,17 @@ equivalent. Otherwise, it will return 1 */
 
 
 bool Tree::insert(int x) {
-
+    //TODO : leftsize 업데이트 안됨. -> 지금 이상하게됨.
+    //TODO : 일부 삽입에 실패하는 경우 발생 -> 중복으로 삽입 실패하는지 확인하기.
 	TreeNode* p = root;
 	TreeNode* q = NULL;
+
+
+    if(root == nullptr){ //첫 생성일 경
+        root = new TreeNode;
+        root->data = x;
+        return true;
+    }
 
     while(p != nullptr){ //p가 없을떄까지 반복한다.
         q = p;
@@ -212,6 +222,17 @@ bool Tree::insert(int x) {
             return false;
         }
     }
+    //q의 Child에 해당하는 값을 삽입한다.
+
+    if(x<q->data){ //Left혹은 Right가 반드시 nullptr이므로
+        q->LeftChild = new TreeNode;
+        q->LeftChild->data = x;
+    } else {
+        q->RightChild = new TreeNode;
+        q->RightChild->data = x;
+    }
+    rank();
+    return true;
 
 }
 
@@ -246,7 +267,6 @@ int main() {
 				rnd = rand() % 20;
 				if (!t.insert(rnd)) cout << "Insert Duplicated data" << endl;
 			}
-
 			break;
 		case Remove:
 			int x;
@@ -292,10 +312,12 @@ int main() {
             break;
 
         case SplitJoin:
+            /*
             cin >> x;
             split(x,A,B,y);
             Tree tx = ThreeWayJoin(A,x,B);
             tx.inorder(); //split과 책에 있는 코드 활용해서 만들기
+             */
             break;
 
             
