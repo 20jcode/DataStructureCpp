@@ -29,7 +29,7 @@ private:
 	TreeNode* LeftChild;
 	int data;
 	int leftSize;//rank를 위해 왼쪽 노드의 갯수
-    int height; // 추가됨.
+    int height; // 추가됨. -> Tl - Tr
 	TreeNode* RightChild;
 
 public:
@@ -110,14 +110,18 @@ int Tree::depth(TreeNode* p){ //TODO
     int rnum = depth(p->RightChild);
 
     //Leaf노드일때 높이는 0이된다.
+    //둘 중 하나의 height가 0이 아니라면 그것이 높이가 된다.
+    //둘 다 값이 있다면 큰 값이 높이가 된다.
 
-    if(p->LeftChild == nullptr){
+    if(p->RightChild == nullptr && p->LeftChild == nullptr){ //Leaf일떄
         p->height = 0;
+        return p->height;
+    } else if(lnum>rnum){
+
     }
-    if(p->RightChild == nullptr){
-        p->height = 0;
-    }
-    return p->height+1;
+
+
+
 
 }
 
@@ -193,10 +197,21 @@ equivalent. Otherwise, it will return 1 */
 }
 
 
-bool Tree::insert(int x) {// binary search tree를 만드는 입력 => A + B * C을 tree로 만드는 방법: 입력 해결하는 알고리즘 작성 방법을
-							// 설계하여 구현
+bool Tree::insert(int x) {
+
 	TreeNode* p = root;
 	TreeNode* q = NULL;
+
+    while(p != nullptr){ //p가 없을떄까지 반복한다.
+        q = p;
+        if(x<p->data){ //p보다 삽입값이 작다면
+            p = p->LeftChild;
+        } else if(x>p->data){
+            p = p->RightChild;
+        } else { //중복값은 삽입하지 않도록 한다.
+            return false;
+        }
+    }
 
 }
 
