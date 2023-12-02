@@ -265,6 +265,8 @@ int main() {
 			cin >> max;
 			for (int i = 0; i < max; i++) {
 				rnd = rand() % 20;
+                //확인용
+                cout<<"입력값은 : " <<rnd<<endl;
 				if (!t.insert(rnd)) cout << "Insert Duplicated data" << endl;
 			}
 			break;
