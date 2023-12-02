@@ -98,11 +98,16 @@ int Tree::rank(TreeNode* current) {
     //각 노드의 leftsize를 갱신한다.
     //rank는 자신을 root로 하는 하위 트리의 높이를 저장하는 것이다.
     //노드를 합칠 경우 rank가 낮은 트리가 랭크가 높은 트리에게 붙게 된다.
+    //언제든지 rank를 호출하면 leftsize가 갱신될 수 있도록 한다.
+
+    int num = rank(current->LeftChild);
+
     if(current->LeftChild == nullptr){
-        current->leftSize = 0; //없으면 0으로 설정해줌
+        current->leftSize = 0;
     } else {
-        current->leftSize +=1;
+       current->leftSize = num+1;
     }
+
     return current->leftSize; // 항상 +1값이 리턴되도록 한다.
 
 }
@@ -121,9 +126,6 @@ int Tree::depth(TreeNode* p){ //TODO
     } else if(lnum>rnum){
 
     }
-
-
-
 
 }
 
